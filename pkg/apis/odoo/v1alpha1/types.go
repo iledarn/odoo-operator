@@ -22,8 +22,58 @@ type OdooInstance struct {
 }
 
 type OdooInstanceSpec struct {
-	// Fill me
+	Image            OdooInstanceSpecImage    `json:image`
+	DbSpec           OdooInstanceSpecDbSpec   `json:dbSpec`
+	ResourceSpec     OdooInstanceResourceSpec `json:resourceSpec`
+	AdminPassword    string                   `json:"adminPassword"`
+	ConfigMap        string                   `json:"configMap"`
+	SeedingConfigMap string                   `json:"seedingConfigMap"`
+	// Replicas         int                      `json:"replicas"`
+
+	// MailServer  bool `json:"mailServer"`
+	// OnlyOffice  bool `json:"onlyOffice"`
+	// Mattermost  bool `json:"mattermost"`
+	// Nuxeo       bool `json:"nuxeo"`
+	// BpmnEngine  bool `json:"bpmnEngine"`
+	// OpenProject bool `json:"openProject"`
+}
+
+type OdooInstanceSpecImage struct {
+	Registry string `json:"registry"`
+	Name     string `json:"image"`
+	Tag      string `json:"tag"`
+}
+
+type OdooInstanceSpecDbSpec struct {
+	// TODO: Enforce DbQuota compiled by a db Cronjob
+	// Using mtDatabase + pg_cron and dbQuota +
+	// https://stackoverflow.com/a/37822365
+	User        string `json:"user"`
+	Password    string `json:"password"`
+	MgtDatabase string `json:"mgtDatabase"`
+	UserQuota   int    `json:"userQuota"`
+}
+
+type OdooInstanceResourceSpec struct {
+	Cpu  int `json:"cpu"`
+	Ram  int `json:"ram"`
+	Disk int `json:"disk"`
 }
 type OdooInstanceStatus struct {
-	// Fill me
+	DbQuotaUsage  string            `json:"dbQuotaUsage,omitempty"`
+	DiskUsage     string            `json:"diskUsage,omitempty"`
+	State         OdooInstanceState `json:"state,omitempty"`
+	Message       string            `json:"message,omitempty"`
+	ImageVersions []string          `json:"imageVersions,omitempty"`
+	// Replicas     int               `json:"replicas,omitempty"`
 }
+
+// OdooInstanceState ...
+type OdooInstanceState string
+
+const (
+	// OdooInstanceStateReconciled ...
+	OdooInstanceStateReconciled OdooInstanceState = "Reconciled"
+	// OdooInstanceStateMigrating ...
+	OdooInstanceStateMigrating OdooInstanceState = "Migrating"
+)

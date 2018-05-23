@@ -1,4 +1,4 @@
 apiVersion: "odoo.k8s.io/v1alpha1"
-kind: "OdooInstance"
+kind: "OdooCluster"
 metadata:
   name: "example"

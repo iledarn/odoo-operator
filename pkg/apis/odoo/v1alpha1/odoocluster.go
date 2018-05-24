@@ -22,12 +22,11 @@ type OdooCluster struct {
 }
 
 type OdooClusterSpec struct {
-	ImageSpec        OdooClusterSpecImage    `json:imageSpec`
-	DbSpec           OdooClusterSpecDbSpec   `json:dbSpec`
-	ResourceSpec     OdooClusterResourceSpec `json:resourceSpec`
-	AdminPassword    string                  `json:"adminPassword"`
-	ConfigMap        string                  `json:"configMap"`
-	SeedingConfigMap string                  `json:"seedingConfigMap"`
+	ImageSpec     OdooClusterSpecImage    `json:imageSpec`
+	DbSpec        OdooClusterSpecDbSpec   `json:dbSpec`
+	ResourceSpec  OdooClusterResourceSpec `json:resourceSpec`
+	AdminPassword string                  `json:"adminPassword"`
+	ConfigMap     string                  `json:"configMap"`
 	// Replicas         int                      `json:"replicas"`
 
 	// MailServer  bool `json:"mailServer"`
@@ -60,11 +59,11 @@ type OdooClusterResourceSpec struct {
 	Disk int `json:"disk"`
 }
 type OdooClusterStatus struct {
-	DbQuotaUsage  string           `json:"dbQuotaUsage,omitempty"`
-	DiskUsage     string           `json:"diskUsage,omitempty"`
-	State         OdooClusterState `json:"state,omitempty"`
-	Message       string           `json:"message,omitempty"`
-	ImageVersions []string         `json:"imageVersions,omitempty"`
+	DbUserQuotaUsage string           `json:"dbUserQuotaUsage,omitempty"`
+	DiskUsage        string           `json:"diskUsage,omitempty"`
+	State            OdooClusterState `json:"state,omitempty"`
+	Message          string           `json:"message,omitempty"`
+	ImageVersions    []string         `json:"imageVersions,omitempty"`
 	// Replicas     int               `json:"replicas,omitempty"`
 }
 

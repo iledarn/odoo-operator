@@ -25,3 +25,17 @@ spec:
     singular: odooinstance
   scope: Namespaced
   version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: clustermigrations.odoo.k8s.io
+spec:
+  group: odoo.k8s.io
+  names:
+    kind: ClusterMigration
+    listKind: ClusterMigrationList
+    plural: clustermigrations
+    singular: clustermigration
+  scope: Namespaced
+  version: v1alpha1

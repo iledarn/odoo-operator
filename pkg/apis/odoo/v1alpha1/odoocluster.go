@@ -27,6 +27,8 @@ type OdooClusterSpec struct {
 	ResourceSpec  OdooClusterResourceSpec `json:resourceSpec`
 	AdminPassword string                  `json:"adminPassword"`
 	ConfigMap     string                  `json:"configMap"`
+	DeployModel   OdooClusterMode         `json:"deployModel`
+	NodeSelector  string                  `json:"nodeSelector"`
 	// Replicas         int                      `json:"replicas"`
 
 	// MailServer  bool `json:"mailServer"`
@@ -58,6 +60,19 @@ type OdooClusterResourceSpec struct {
 	Ram  int `json:"ram"`
 	Disk int `json:"disk"`
 }
+
+// OdooClusterMode ...
+type OdooClusterMode string
+
+const (
+	// OdooClusterModeRemote ...
+	OdooClusterModeRemote OdooClusterMode = "remote"
+	// OdooClusterModeLocal ...
+	OdooClusterModeLocal OdooClusterMode = "local"
+	// OdooClusterModeHybrid ...
+	OdooClusterModeHybrid OdooClusterMode = "hybrid"
+)
+
 type OdooClusterStatus struct {
 	DbUserQuotaUsage string           `json:"dbUserQuotaUsage,omitempty"`
 	DiskUsage        string           `json:"diskUsage,omitempty"`

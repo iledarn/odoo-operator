@@ -1,4 +1,4 @@
-package cluster
+package instance
 
 import (
 	api "github.com/xoes/odoo-operator/pkg/apis/odoo/v1alpha1"
@@ -27,3 +27,4 @@ func asOwner(oc *api.OdooInstance) metav1.OwnerReference {
 		UID:        oc.UID,
 		Controller: &trueVar,
 	}
+}

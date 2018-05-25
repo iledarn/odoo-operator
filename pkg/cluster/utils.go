@@ -27,3 +27,4 @@ func asOwner(oc *api.OdooCluster) metav1.OwnerReference {
 		UID:        oc.UID,
 		Controller: &trueVar,
 	}
+}

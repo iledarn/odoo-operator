@@ -23,7 +23,7 @@ type OdooCluster struct {
 
 type OdooClusterSpec struct {
 	Images        []ImageSpec             `json:images`
-	PqSpec        PgNamespace             `json:pgSpec`
+	PgSpec        PgNamespaceSpec         `json:pgNsSpec`
 	ResourceSpec  OdooClusterResourceSpec `json:resourceSpec`
 	AdminPassword string                  `json:"adminPassword"`
 	ConfigMap     string                  `json:"configMap"`

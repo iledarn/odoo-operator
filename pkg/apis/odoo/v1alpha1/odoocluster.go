@@ -45,21 +45,6 @@ type OdooClusterSpecImage struct {
 	Tag      string `json:"tag"`
 }
 
-type PgNamespace struct {
-	User      string              `json:"user"`
-	Password  string              `json:"password"`
-	UserQuota int                 `json:"userQuota"`
-	PgCluster PgClusterConnection `json:"pgCluster"`
-}
-
-type PgClusterConnection struct {
-	Database string `json:"database"`
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-}
-
 type OdooClusterResourceSpec struct {
 	Cpu  int `json:"cpu"`
 	Ram  int `json:"ram"`

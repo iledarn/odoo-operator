@@ -46,14 +46,10 @@ type OdooClusterSpecImage struct {
 }
 
 type PgNamespace struct {
-	// TODO: Enforce DbQuota compiled by a db Cronjob
-	// Using mtDatabase + pg_cron and dbQuota +
-	// https://stackoverflow.com/a/37822365
-	User        string              `json:"user"`
-	Password    string              `json:"password"`
-	MgtDatabase string              `json:"mgtDatabase"`
-	UserQuota   int                 `json:"userQuota"`
-	PgCluster   PgClusterConnection `json:"pgCluster"`
+	User      string              `json:"user"`
+	Password  string              `json:"password"`
+	UserQuota int                 `json:"userQuota"`
+	PgCluster PgClusterConnection `json:"pgCluster"`
 }
 
 type PgClusterConnection struct {

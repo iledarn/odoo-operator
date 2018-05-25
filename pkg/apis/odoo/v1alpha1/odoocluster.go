@@ -23,7 +23,7 @@ type OdooCluster struct {
 
 type OdooClusterSpec struct {
 	Images        []OdooClusterSpecImage  `json:images`
-	PqSpec        OdooClusterSpecPgSpec   `json:pgSpec`
+	PqSpec        PgNamespace             `json:pgSpec`
 	ResourceSpec  OdooClusterResourceSpec `json:resourceSpec`
 	AdminPassword string                  `json:"adminPassword"`
 	ConfigMap     string                  `json:"configMap"`
@@ -45,16 +45,23 @@ type OdooClusterSpecImage struct {
 	Tag      string `json:"tag"`
 }
 
-type OdooClusterSpecPgSpec struct {
+type PgNamespace struct {
 	// TODO: Enforce DbQuota compiled by a db Cronjob
 	// Using mtDatabase + pg_cron and dbQuota +
 	// https://stackoverflow.com/a/37822365
-	Host        string `json:"host"`
-	Port        string `json:"port"`
-	User        string `json:"user"`
-	Password    string `json:"password"`
-	MgtDatabase string `json:"mgtDatabase"`
-	UserQuota   int    `json:"userQuota"`
+	User        string              `json:"user"`
+	Password    string              `json:"password"`
+	MgtDatabase string              `json:"mgtDatabase"`
+	UserQuota   int                 `json:"userQuota"`
+	PgCluster   PgClusterConnection `json:"pgCluster"`
+}
+
+type PgClusterConnection struct {
+	Database string `json:"database"`
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
 }
 
 type OdooClusterResourceSpec struct {

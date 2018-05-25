@@ -22,12 +22,12 @@ type OdooCluster struct {
 }
 
 type OdooClusterSpec struct {
-	ImageSpec     OdooClusterSpecImage    `json:imageSpec`
-	DbSpec        OdooClusterSpecDbSpec   `json:dbSpec`
+	Images        []OdooClusterSpecImage  `json:images`
+	PqSpec        OdooClusterSpecPgSpec   `json:pgSpec`
 	ResourceSpec  OdooClusterResourceSpec `json:resourceSpec`
 	AdminPassword string                  `json:"adminPassword"`
 	ConfigMap     string                  `json:"configMap"`
-	DeployModel   OdooClusterMode         `json:"deployModel`
+	DeployModel   OdooClusterMode         `json:deployModel`
 	NodeSelector  string                  `json:"nodeSelector"`
 	// Replicas         int                      `json:"replicas"`
 
@@ -45,10 +45,12 @@ type OdooClusterSpecImage struct {
 	Tag      string `json:"tag"`
 }
 
-type OdooClusterSpecDbSpec struct {
+type OdooClusterSpecPgSpec struct {
 	// TODO: Enforce DbQuota compiled by a db Cronjob
 	// Using mtDatabase + pg_cron and dbQuota +
 	// https://stackoverflow.com/a/37822365
+	Host        string `json:"host"`
+	Port        string `json:"port"`
 	User        string `json:"user"`
 	Password    string `json:"password"`
 	MgtDatabase string `json:"mgtDatabase"`
@@ -78,16 +80,22 @@ type OdooClusterStatus struct {
 	DiskUsage        string           `json:"diskUsage,omitempty"`
 	State            OdooClusterState `json:"state,omitempty"`
 	Message          string           `json:"message,omitempty"`
-	ImageVersions    []string         `json:"imageVersions,omitempty"`
+	CurrentImage     string           `json:"currentImage,omitempty"`
+	ImageLoadShare   []ImageLoad      `json:"imageLoadShare,omitempty"`
 	// Replicas     int               `json:"replicas,omitempty"`
+}
+
+type ImageLoad struct {
+	Name      string `json:"name"`
+	Instances int    `json:"instances"`
 }
 
 // OdooClusterState ...
 type OdooClusterState string
 
 const (
+	// OdooClusterStateCreated ...
+	OdooClusterStateCreated OdooClusterState = "Created"
 	// OdooClusterStateReconciled ...
 	OdooClusterStateReconciled OdooClusterState = "Reconciled"
-	// OdooClusterStateMigrating ...
-	OdooClusterStateMigrating OdooClusterState = "Migrating"
 )

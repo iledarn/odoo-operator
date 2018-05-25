@@ -22,7 +22,7 @@ type OdooCluster struct {
 }
 
 type OdooClusterSpec struct {
-	Images        []OdooClusterSpecImage  `json:images`
+	Images        []ImageSpec             `json:images`
 	PqSpec        PgNamespace             `json:pgSpec`
 	ResourceSpec  OdooClusterResourceSpec `json:resourceSpec`
 	AdminPassword string                  `json:"adminPassword"`
@@ -37,12 +37,6 @@ type OdooClusterSpec struct {
 	// Nuxeo       bool `json:"nuxeo"`
 	// BpmnEngine  bool `json:"bpmnEngine"`
 	// OpenProject bool `json:"openProject"`
-}
-
-type OdooClusterSpecImage struct {
-	Registry string `json:"registry"`
-	Name     string `json:"image"`
-	Tag      string `json:"tag"`
 }
 
 type OdooClusterResourceSpec struct {

@@ -22,9 +22,9 @@ type ClusterMigration struct {
 }
 
 type ClusterMigrationSpec struct {
-	OdooCluster       string               `json:odooCluster`
-	MigratorImageSpec OdooClusterSpecImage `json:migratorImageSpec`
-	NewImageSpec      OdooClusterSpecImage `json:newImageSpec`
+	OdooCluster       string    `json:odooCluster`
+	MigratorImageSpec ImageSpec `json:migratorImageSpec`
+	NewImageSpec      ImageSpec `json:newImageSpec`
 }
 
 type ClusterMigrationStatus struct {

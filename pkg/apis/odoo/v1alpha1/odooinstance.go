@@ -31,18 +31,21 @@ type OdooInstanceSpec struct {
 }
 
 type OdooInstanceStatus struct {
-	DbQuotaUsage        int               `json:"dbQuotaUsage,omitempty"`
-	FilestoreQuotaUsage int               `json:"filestoreQuotaUsage,omitempty"`
-	State               OdooInstanceState `json:"state,omitempty"`
-	Message             string            `json:"message,omitempty"`
+	State   OdooInstanceState `json:"state,omitempty"`
+	Message string            `json:"message,omitempty"`
+	// Additional Status
+	DbQuotaUsage        int `json:"dbQuotaUsage,omitempty"`
+	FilestoreQuotaUsage int `json:"filestoreQuotaUsage,omitempty"`
 }
 
 // OdooInstanceState ...
 type OdooInstanceState string
 
 const (
-	// OdooInstanceStateHealthy ...
-	OdooInstanceStateHealthy OdooInstanceState = "Healthy"
+	// OdooInstanceStateCreated ...
+	OdooInstanceStateCreated OdooInstanceState = "Created"
+	// OdooInstanceStateReconciled ...
+	OdooInstanceStateReconciled OdooInstanceState = "Reconciled"
 	// OdooInstanceStateError ...
 	OdooInstanceStateError OdooInstanceState = "Error"
 	// OdooInstanceStateSuspended ...

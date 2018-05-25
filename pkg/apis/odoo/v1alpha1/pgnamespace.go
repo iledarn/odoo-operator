@@ -36,9 +36,10 @@ type PgClusterConnection struct {
 }
 
 type PgNamespaceStatus struct {
-	UsedQuota int              `json:"usedQuota"`
-	State     PgNamespaceState `json:"state,omitempty"`
-	Message   string           `json:"message,omitempty"`
+	State   PgNamespaceState `json:"state,omitempty"`
+	Message string           `json:"message,omitempty"`
+	// Additional Status
+	UsedQuota int `json:"usedQuota"`
 }
 
 // PgNamespaceState ...

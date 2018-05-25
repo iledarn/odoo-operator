@@ -55,15 +55,18 @@ const (
 )
 
 type InstanceBackupStatus struct {
-	State InstanceBackupState `json:"state,omitempty"`
+	State   InstanceBackupState `json:"state,omitempty"`
+	Message string              `json:"message,omitempty"`
 }
 
 // InstanceBackupState ...
 type InstanceBackupState string
 
 const (
-	// InstanceBackupStateStarted ...
-	InstanceBackupStateStarted InstanceBackupState = "Started"
-	// InstanceBackupStateVerified ...
-	InstanceBackupStateVerified InstanceBackupState = "Verified"
+	// InstanceBackupStateCreated ...
+	InstanceBackupStateCreated InstanceBackupState = "Created"
+	// InstanceBackupStateProcessed ...
+	InstanceBackupStateProcessed InstanceBackupState = "Processed"
+	// InstanceBackupStateError ...
+	InstanceBackupStateError InstanceBackupState = "Error"
 )

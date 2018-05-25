@@ -28,7 +28,8 @@ type InstanceMigrationSpec struct {
 }
 
 type InstanceMigrationStatus struct {
-	State InstanceMigrationState `json:"state,omitempty"`
+	State   InstanceMigrationState `json:"state,omitempty"`
+	Message string                 `json:"message,omitempty"`
 }
 
 // InstanceMigrationState ...
@@ -39,4 +40,6 @@ const (
 	InstanceMigrationStateCreated InstanceMigrationState = "Created"
 	// InstanceMigrationStateProcessed ...
 	InstanceMigrationStateProcessed InstanceMigrationState = "Processed"
+	// InstanceMigrationStateError ...
+	InstanceMigrationStateError InstanceMigrationState = "Error"
 )

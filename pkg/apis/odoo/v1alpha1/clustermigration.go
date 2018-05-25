@@ -28,9 +28,11 @@ type ClusterMigrationSpec struct {
 }
 
 type ClusterMigrationStatus struct {
-	OldInstances int                   `json:"oldInstances,omitempty"`
-	NewInstances int                   `json:"newInstances,omitempty"`
-	State        ClusterMigrationState `json:"state,omitempty"`
+	State   ClusterMigrationState `json:"state,omitempty"`
+	Message string                `json:"message,omitempty"`
+	// Additional Status
+	OldInstances int `json:"oldInstances,omitempty"`
+	NewInstances int `json:"newInstances,omitempty"`
 }
 
 // ClusterMigrationState ...
@@ -39,8 +41,10 @@ type ClusterMigrationState string
 const (
 	// ClusterMigrationStateCreated ...
 	ClusterMigrationStateCreated ClusterMigrationState = "Created"
-	// ClusterMigrationStateMigrating ...
-	ClusterMigrationStateMigrating ClusterMigrationState = "In use"
 	// ClusterMigrationStateFinished ...
-	ClusterMigrationStateFinished ClusterMigrationState = "Finished"
+	ClusterMigrationStateFinished ClusterMigrationState = "Processed"
+	// ClusterMigrationStateError ...
+	ClusterMigrationStateError ClusterMigrationState = "Error"
+	// ClusterMigrationStateMigrating ...
+	ClusterMigrationStateMigrating ClusterMigrationState = "Migrating"
 )

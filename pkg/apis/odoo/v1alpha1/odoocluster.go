@@ -58,12 +58,13 @@ const (
 )
 
 type OdooClusterStatus struct {
-	DbUserQuotaUsage string           `json:"dbUserQuotaUsage,omitempty"`
-	DiskUsage        string           `json:"diskUsage,omitempty"`
-	State            OdooClusterState `json:"state,omitempty"`
-	Message          string           `json:"message,omitempty"`
-	CurrentImage     string           `json:"currentImage,omitempty"`
-	ImageLoadShare   []ImageLoad      `json:"imageLoadShare,omitempty"`
+	State   OdooClusterState `json:"state,omitempty"`
+	Message string           `json:"message,omitempty"`
+	// Additional Status
+	DbUserQuotaUsage string      `json:"dbUserQuotaUsage,omitempty"`
+	DiskUsage        string      `json:"diskUsage,omitempty"`
+	CurrentImage     string      `json:"currentImage,omitempty"`
+	ImageLoadShare   []ImageLoad `json:"imageLoadShare,omitempty"`
 	// Replicas     int               `json:"replicas,omitempty"`
 }
 
@@ -80,4 +81,6 @@ const (
 	OdooClusterStateCreated OdooClusterState = "Created"
 	// OdooClusterStateReconciled ...
 	OdooClusterStateReconciled OdooClusterState = "Reconciled"
+	// OdooClusterStateError ...
+	OdooClusterStateError OdooClusterState = "Error"
 )

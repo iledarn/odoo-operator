@@ -26,16 +26,16 @@ type OdooInstanceSpec struct {
 	// DbName         string      `json:dbName`
 	HostName       string `json:hostName`
 	DbSeedCfgMap   string `json:"dbSeedCfgMap"`
-	DbQuota        int    `json:"dbQuota"`
-	FilestoreQuota int    `json:"fsQuota"`
+	DbQuota        int32  `json:"dbQuota"`
+	FilestoreQuota int32  `json:"fsQuota"`
 }
 
 type OdooInstanceStatus struct {
 	State   OdooInstanceState `json:"state,omitempty"`
 	Message string            `json:"message,omitempty"`
 	// Additional Status
-	UsedDbQuota int `json:"usedDbQuota,omitempty"`
-	UsedFsQuota int `json:"usedFsQuota,omitempty"`
+	UsedDbQuota int32 `json:"usedDbQuota,omitempty"`
+	UsedFsQuota int32 `json:"usedFsQuota,omitempty"`
 }
 
 // OdooInstanceState ...

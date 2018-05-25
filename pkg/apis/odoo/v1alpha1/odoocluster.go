@@ -29,7 +29,7 @@ type OdooClusterSpec struct {
 	ConfigMap     string                  `json:"configMap"`
 	DeployModel   OdooClusterMode         `json:deployModel`
 	NodeSelector  string                  `json:"nodeSelector"`
-	// Replicas         int                      `json:"replicas"`
+	// Replicas         int32                      `json:"replicas"`
 
 	// MailServer  bool `json:"mailServer"`
 	// OnlyOffice  bool `json:"onlyOffice"`
@@ -40,9 +40,9 @@ type OdooClusterSpec struct {
 }
 
 type OdooClusterResourceSpec struct {
-	Cpu         int `json:"cpu"`
-	Ram         int `json:"ram"`
-	Persistence int `json:"persistence"`
+	Cpu         int32 `json:"cpu"`
+	Ram         int32 `json:"ram"`
+	Persistence int32 `json:"persistence"`
 }
 
 // OdooClusterMode ...
@@ -65,12 +65,12 @@ type OdooClusterStatus struct {
 	UsedFsQuota    string      `json:"usedFsQuota,omitempty"`
 	CurrentImage   string      `json:"currentImage,omitempty"`
 	ImageLoadStats []ImageLoad `json:"imageLoadStats,omitempty"`
-	// Replicas     int               `json:"replicas,omitempty"`
+	// Replicas     int32               `json:"replicas,omitempty"`
 }
 
 type ImageLoad struct {
 	Name      string `json:"name"`
-	Instances int    `json:"instances"`
+	Instances int32  `json:"instances"`
 }
 
 // OdooClusterState ...

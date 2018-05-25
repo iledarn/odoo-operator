@@ -31,8 +31,8 @@ type ClusterMigrationStatus struct {
 	State   ClusterMigrationState `json:"state,omitempty"`
 	Message string                `json:"message,omitempty"`
 	// Additional Status
-	OldInstances int `json:"oldInstances,omitempty"`
-	NewInstances int `json:"newInstances,omitempty"`
+	OldInstances int32 `json:"oldInstances,omitempty"`
+	NewInstances int32 `json:"newInstances,omitempty"`
 }
 
 // ClusterMigrationState ...

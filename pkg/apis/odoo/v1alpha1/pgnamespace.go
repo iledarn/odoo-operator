@@ -24,7 +24,7 @@ type PgNamespace struct {
 type PgNamespaceSpec struct {
 	User      string              `json:"user"`
 	Password  string              `json:"password"`
-	UserQuota int                 `json:"userQuota"`
+	UserQuota int32               `json:"userQuota"`
 	PgCluster PgClusterConnection `json:"pgCluster"`
 }
 
@@ -39,7 +39,7 @@ type PgNamespaceStatus struct {
 	State   PgNamespaceState `json:"state,omitempty"`
 	Message string           `json:"message,omitempty"`
 	// Additional Status
-	UsedQuota int `json:"usedQuota"`
+	UsedQuota int32 `json:"usedQuota"`
 }
 
 // PgNamespaceState ...

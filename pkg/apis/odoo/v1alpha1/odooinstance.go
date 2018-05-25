@@ -34,8 +34,8 @@ type OdooInstanceStatus struct {
 	State   OdooInstanceState `json:"state,omitempty"`
 	Message string            `json:"message,omitempty"`
 	// Additional Status
-	DbQuotaUsage        int `json:"dbQuotaUsage,omitempty"`
-	FilestoreQuotaUsage int `json:"filestoreQuotaUsage,omitempty"`
+	UsedDbQuota int `json:"usedDbQuota,omitempty"`
+	UsedFsQuota int `json:"usedFsQuota,omitempty"`
 }
 
 // OdooInstanceState ...

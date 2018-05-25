@@ -40,9 +40,9 @@ type OdooClusterSpec struct {
 }
 
 type OdooClusterResourceSpec struct {
-	Cpu  int `json:"cpu"`
-	Ram  int `json:"ram"`
-	Disk int `json:"disk"`
+	Cpu         int `json:"cpu"`
+	Ram         int `json:"ram"`
+	Persistence int `json:"persistence"`
 }
 
 // OdooClusterMode ...
@@ -61,10 +61,10 @@ type OdooClusterStatus struct {
 	State   OdooClusterState `json:"state,omitempty"`
 	Message string           `json:"message,omitempty"`
 	// Additional Status
-	DbUserQuotaUsage string      `json:"dbUserQuotaUsage,omitempty"`
-	DiskUsage        string      `json:"diskUsage,omitempty"`
-	CurrentImage     string      `json:"currentImage,omitempty"`
-	ImageLoadShare   []ImageLoad `json:"imageLoadShare,omitempty"`
+	UsedDbQuota    string      `json:"usedDbQuota,omitempty"`
+	UsedFsQuota    string      `json:"usedFsQuota,omitempty"`
+	CurrentImage   string      `json:"currentImage,omitempty"`
+	ImageLoadStats []ImageLoad `json:"imageLoadStats,omitempty"`
 	// Replicas     int               `json:"replicas,omitempty"`
 }
 

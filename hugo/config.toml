@@ -1,0 +1,126 @@
+baseURL = "https://xoe-labs.github.io/odoo-operator/"
+languageCode = "en-us"
+title = "Odoo-Operator"
+theme = "elate"
+
+[params]
+  
+  # custom_css = ["css/custom1.css", "css/custom2.css"]
+
+  # Meta
+  description = "Run Odoo reliably at scale."
+  # Navigation
+  [params.navigation]
+    brand = "Odoo-Operator"
+    status = "alpha"
+
+    # You can add custom links before or after the default links
+    # Assign a weight to define the order
+    
+    # prepended links
+    [[menu.prepend]]
+     url = "https://coreos.com/operators/"
+     name = "The Operator Framework"
+     weight = 10
+
+    # postpended links
+    #[[menu.postpend]]
+    #  url = "http://gohugo.io"
+    #  name = "External link"
+    #  weight = 10
+  
+  # Hero section
+  [params.hero]
+    title = "![Odoo-Operator](images/Odoo-Operator-mixed.svg)"
+    subtitle = '''
+Deploy and operatate your <a href="https://odoo.com/" target="_blank">Odoo</a> or <a href="https://flectrahq.com/" target="_blank">Flectra</a> instances reliably at scale based atop kubernetes. Kind of Odoo.sh, yet without reinventing the wheel.
+
+[![GitHub stars](https://img.shields.io/github/stars/xoe-labs/odoo-operator.svg?longCache=true&style=flat-square&logo=github&label=Stars)](https://github.com/xoe-labs/odoo-operator)
+[![By XOE Labs](https://img.shields.io/badge/by-XOE Labs-F26524.svg?longCache=true&style=flat-square)](https://xoe.solutions)
+'''
+
+  # Intro section
+  # Available icons: http://simplelineicons.com/
+  [params.intro]
+
+  [[params.intro.item]]
+    title = "Still in Inception"
+    description = "With [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) mostly defined, we currently iterate on the reconciliation logic to reach a working prototype, as soon as possible."
+    url = "#f5co-contact"
+    button = "Get In Touch"
+    icon = "icon-bulb"
+
+  # Services section
+  [params.services]
+    enable = true
+    title = "Features"
+    description = "Odoo-Operator fully leverages Red Hat's operator framework to run Odoo instances at scale atop a cloud or on-premise kubernetes cluster (= open standard based Odoo.sh alternative)."
+
+    [[params.services.item]]
+      title = "Compliant with 12-Factor"
+      description = "Don't keep state _within_ the Odoo instance enabeling fully horizontal scalability through an external session store and a shared filestore."
+      icon = "icon-check"
+
+    [[params.services.item]]
+      title = "Cluster Deployment"
+      description = "Let's you deploy one or several code versions into a namespaced cluster with a database namesapce, and quotas attached to it. This is greate for custom project with dedicated resources."
+      icon = "icon-rocket"
+
+    [[params.services.item]]
+      title = "Instance Deployment &amp; Seeding"
+      description = "Let's you seed and deploy a database instance with optionally a database and filestore quota attached."
+      icon = "icon-paper-plane"
+
+    [[params.services.item]]
+      title = "Quotas"
+      description = "Set per database and per cluster quotas for full control of your provisioned resources."
+      icon = "icon-calculator"
+
+     [[params.services.item]]
+      title = "Backups"
+      description = "Create automatic and manual incremental snapshots or packaged backups for your database and filestore."      
+      icon = "icon-layers2"
+
+     [[params.services.item]]
+      title = "Migration"
+      description = "Create migration instances and jobs to migrate your databases automatically, fully integrated with the Odoo migration API."      
+      icon = "icon-control-forward"
+
+    # About section
+  [params.about]
+    enable = true
+    title = "Other projects"
+    description = "We are commited to excellence in community-driven development at XOE.<br /> Here is a list of some of our most useful tools"
+
+    [[params.about.item]]
+      name = "Dockery-Odoo"
+      position = "Your efficient development workflow companion"
+      description = ""
+      img = "Dockery-Odoo-color.svg"
+      alt = "Dockery-Odoo"
+      social = [
+        ["icon-globe", "https://xoe-labs.github.io/dockery-odoo"],
+        ["icon-github", "https://github.com/xoe-labs/dockery-odoo"]
+      ]
+
+    [[params.about.item]]
+      name = "Dockery-Odoo Scaffold"
+      position = "Bootstrap your project with useful template files."
+      description = ""
+      img = "Dockery-Odoo-Scaffold-color.svg"
+      alt = "Dockery-Odoo Scaffold"
+      social = [
+        ["icon-globe", "https://xoe-labs.github.io/dockery-odoo-scaffold"],
+        ["icon-home", "https://github.com/xoe-labs/dockery-odoo-scaffold"]
+      ]
+
+    [[params.about.item]]
+      name = "Odoo Patches"
+      position = "A curated patch collection for Odoo / Flectra"
+      description = ""
+      img = "Odoo-Patches-color.svg"
+      alt = "XOE Odoo Patches"
+      social = [
+        ["icon-globe", "https://xoe-labs.github.io/odoo-patches"],
+        ["icon-home", "https://github.com/xoe-labs/odoo-patches"]
+      ]

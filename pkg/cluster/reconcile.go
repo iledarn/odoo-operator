@@ -21,12 +21,12 @@ func Reconcile(cr *api.OdooCluster) (err error) {
 	// TODO: Spin up PgCluster
 
 	// Create or update PgNamespace for OdooCluster
-	err = sdk.Create(crForPgNamespace(cr.PgSpec))
+	err = sdk.Create(crForPgNamespace(&cr.Spec.PgSpec))
 	if err != nil && !errors.IsAlreadyExists(err) {
 		logrus.Errorf("Failed to create odoo cluster PgNamespace: %v", err)
 		return err
 	} else if errors.IsAlreadyExists(err) {
-		err := sdk.Update(crForPgNamespace(cr))
+		err := sdk.Update(crForPgNamespace(&cr.Spec.PgSpec))
 		if err != nil {
 			logrus.Errorf("Failed to update odoo cluster PgNamespace: %v", err)
 			return err
@@ -36,12 +36,12 @@ func Reconcile(cr *api.OdooCluster) (err error) {
 	// Check if PgNamespace is ready.
 	// If not, we need to wait until it is provisioned before proceeding;
 	// Hence, we return from here and let the Watch triggers the handler again.
-	ready, err := isPgNamespaceReady(cr.PgSpec)
+	ready, err := isPgNamespaceReady(&cr.Spec.PgSpec)
 	if err != nil {
 		return fmt.Errorf("failed to check if PgNamespace is ready: %v", err)
 	}
 	if !ready {
-		logrus.Infof("Waiting for PgNamespace (%v) to become ready", cr.PgSpec.Name)
+		logrus.Infof("Waiting for PgNamespace (%v) to become ready", cr.Spec.PgSpec.User)
 		return nil
 	}
 
@@ -87,4 +87,6 @@ func Reconcile(cr *api.OdooCluster) (err error) {
 	return nil
 }
 
-func isPgNamespaceReady(cr *api.PgNamespace) (bool, error) { return true, nil }
+func isPgNamespaceReady(cr *api.PgNamespaceSpec) (bool, error) { return true, nil }
+
+func ReconcileMigration(cr *api.ClusterMigration) (err error) { return nil }

@@ -13,7 +13,7 @@ import (
 	// "k8s.io/apimachinery/pkg/util/intstr"
 )
 
-// func crForPgNamespace(cr *api.PgNamespace) *appsv1.Deployment         { return nil }
+func crForPgNamespace(cr *api.PgNamespaceSpec) *api.PgNamespace       { return nil }
 func configmapForOdooCluster(cr *api.OdooCluster) *v1.ConfigMap       { return nil }
 func secretForOdooCluster(cr *api.OdooCluster) *v1.Secret             { return nil }
 func deploymentForOdooCluster(cr *api.OdooCluster) *appsv1.Deployment { return nil }

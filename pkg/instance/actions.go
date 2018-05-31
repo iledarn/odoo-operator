@@ -9,4 +9,5 @@ import (
 	// "k8s.io/apimachinery/pkg/api/errors"
 )
 
-func Reconcile(cr *api.OdooInstance) (err error) { return nil }
+func CreateMigration(cr *api.InstanceMigration) (err error) { return nil }
+func CreateBackup(cr *api.InstanceBackup) (err error)       { return nil }

@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/sirupsen/logrus"
-	api "github.com/xoes/odoo-operator/pkg/apis/odoo/v1alpha1"
+	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 )

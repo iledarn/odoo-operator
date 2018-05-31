@@ -3,10 +3,10 @@ package stub
 import (
 	"context"
 
-	api "github.com/xoes/odoo-operator/pkg/apis/odoo/v1alpha1"
-	"github.com/xoes/odoo-operator/pkg/cluster"
-	"github.com/xoes/odoo-operator/pkg/instance"
-	"github.com/xoes/odoo-operator/pkg/pg"
+	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
+	"github.com/xoe-labs/odoo-operator/pkg/cluster"
+	"github.com/xoe-labs/odoo-operator/pkg/instance"
+	"github.com/xoe-labs/odoo-operator/pkg/pg"
 
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
 )

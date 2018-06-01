@@ -38,6 +38,7 @@ const (
 )
 
 func configmapForOdooCluster(cr *api.OdooCluster) *v1.ConfigMap {
+	selector := labelsForOdooCluster(cr.GetName())
 
 	var cfgDefaultData string
 	var cfgCustomData string
@@ -51,8 +52,8 @@ func configmapForOdooCluster(cr *api.OdooCluster) *v1.ConfigMap {
 			Namespace: cr.Namespace,
 		},
 	}
-	cm.Name = "abc"
-	cm.Labels = labelsForOdooCluster(cr.Name)
+	cm.Name = configMapNameForOdoo(cr)
+	cm.Labels = selector
 	cfgDefaultData = newConfigWithDefaultParams(cfgDefaultData)
 	cm.Data = map[string]string{filepath.Base(odooDefaultConfigPath): cfgDefaultData}
 	if len(cr.Spec.ConfigMap) != 0 {
@@ -193,4 +194,9 @@ func newConfigWithDefaultParams(data string) string {
 	buf.WriteString(SMTPSection)
 
 	return buf.String()
+}
+
+// configMapNameForOdoo is the configmap name for the given odoo cluster.
+func configMapNameForOdoo(cr *api.OdooCluster) string {
+	return cr.Name
 }

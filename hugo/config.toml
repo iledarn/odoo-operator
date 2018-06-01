@@ -45,7 +45,16 @@ Deploy and operatate your <a href="https://odoo.com/" target="_blank">Odoo</a> o
 
   [[params.intro.item]]
     title = "Still in Inception"
-    description = "With [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) mostly defined, we currently iterate on the reconciliation logic to reach a working prototype, as soon as possible."
+    description = """
+We are moving fast:
+
+<input type="checkbox" onclick="return false;" checked/> [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) mostly defined
+<br/><input type="checkbox" onclick="return false;" checked/> General reconciliation logic mostly defined
+<br/><input type="checkbox" onclick="return false;" checked/> Cluster Resources implemented
+<br/><input type="checkbox" onclick="return false;"/> Instance actions implemented
+<br/><input type="checkbox" onclick="return false;"/> PgNamespace actions implemented
+<br/><input type="checkbox" onclick="return false;"/> Working prototype
+"""
     url = "#f5co-contact"
     button = "Get In Touch"
     icon = "icon-bulb"

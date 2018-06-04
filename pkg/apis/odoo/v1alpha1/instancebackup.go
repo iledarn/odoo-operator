@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -37,9 +38,9 @@ type InstanceBackupStrategyName string
 
 const (
 	// InstanceBackupStrategyNameMandate ...
-	InstanceBackupStrategyNameMandate InstanceBackupStrategyName = "mandate"
+	InstanceBackupStrategyNameMandate InstanceBackupStrategyName = "Mandated"
 	// InstanceBackupStrategyNamePackage ...
-	InstanceBackupStrategyNamePackage InstanceBackupStrategyName = "package"
+	InstanceBackupStrategyNamePackage InstanceBackupStrategyName = "Packaged"
 )
 
 // InstanceBackupTarget ...
@@ -51,22 +52,31 @@ const (
 	// InstanceBackupTargetFS ...
 	InstanceBackupTargetFS InstanceBackupTarget = "FS"
 	// InstanceBackupTargetAll ...
-	InstanceBackupTargetAll InstanceBackupTarget = "all"
+	InstanceBackupTargetAll InstanceBackupTarget = "All"
 )
 
 type InstanceBackupStatus struct {
-	State   InstanceBackupState `json:"state,omitempty"`
-	Message string              `json:"message,omitempty"`
+	// Current service state of apiService.
+	// +optional
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	Conditions []InstanceBackupCondition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 }
 
-// InstanceBackupState ...
-type InstanceBackupState string
+type InstanceBackupCondition struct {
+	// Type is the type of the condition.
+	Type            InstanceBackupConditionType `json:"type"`
+	StatusCondition `json:",inline"`
+}
+
+// InstanceBackupConditionType ...
+type InstanceBackupConditionType string
 
 const (
-	// InstanceBackupStateCreated ...
-	InstanceBackupStateCreated InstanceBackupState = "Created"
-	// InstanceBackupStateProcessed ...
-	InstanceBackupStateProcessed InstanceBackupState = "Processed"
-	// InstanceBackupStateError ...
-	InstanceBackupStateError InstanceBackupState = "Error"
+	// InstanceBackupConditionTypeCreated ...
+	InstanceBackupConditionTypeCreated InstanceBackupConditionType = "Created"
+	// InstanceBackupConditionTypeProcessed ...
+	InstanceBackupConditionTypeProcessed InstanceBackupConditionType = "Processed"
+	// InstanceBackupConditionTypeErrored ...
+	InstanceBackupConditionTypeErrored InstanceBackupConditionType = "Errored"
 )

@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -24,7 +25,7 @@ type PgNamespace struct {
 type PgNamespaceSpec struct {
 	User      string              `json:"user"`
 	Password  string              `json:"password"`
-	UserQuota int32               `json:"userQuota"`
+	UserQuota v1.ResourceList     `json:"userQuota"`
 	PgCluster PgClusterConnection `json:"pgCluster"`
 }
 
@@ -36,20 +37,30 @@ type PgClusterConnection struct {
 }
 
 type PgNamespaceStatus struct {
-	State   PgNamespaceState `json:"state,omitempty"`
-	Message string           `json:"message,omitempty"`
+	// Current service state of apiService.
+	// +optional
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	Conditions []PgNamespaceCondition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 	// Additional Status
-	UsedQuota int32 `json:"usedQuota"`
+	// +optional
+	UsedQuota v1.ResourceList `json:"usedQuota,omitempty"`
 }
 
-// PgNamespaceState ...
-type PgNamespaceState string
+type PgNamespaceCondition struct {
+	// Type is the type of the condition.
+	Type            PgNamespaceConditionType `json:"type"`
+	StatusCondition `json:",inline"`
+}
+
+// PgNamespaceConditionType ...
+type PgNamespaceConditionType string
 
 const (
-	// PgNamespaceStateCreated ...
-	PgNamespaceStateCreated PgNamespaceState = "Created"
-	// PgNamespaceStateReconciled ...
-	PgNamespaceStateReconciled PgNamespaceState = "Reconciled"
-	// PgNamespaceStateError ...
-	PgNamespaceStateError PgNamespaceState = "Error"
+	// PgNamespaceConditionTypeCreated ...
+	PgNamespaceConditionTypeCreated PgNamespaceConditionType = "Created"
+	// PgNamespaceConditionTypeReconciled ...
+	PgNamespaceConditionTypeReconciled PgNamespaceConditionType = "Reconciled"
+	// PgNamespaceConditionTypeErrored ...
+	PgNamespaceConditionTypeErrored PgNamespaceConditionType = "Errored"
 )

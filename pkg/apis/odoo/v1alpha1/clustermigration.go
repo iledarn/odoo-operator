@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,23 +29,32 @@ type ClusterMigrationSpec struct {
 }
 
 type ClusterMigrationStatus struct {
-	State   ClusterMigrationState `json:"state,omitempty"`
-	Message string                `json:"message,omitempty"`
+	// Current service state of apiService.
+	// +optional
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	Conditions []ClusterMigrationCondition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 	// Additional Status
+	// +optional
 	OldInstances int32 `json:"oldInstances,omitempty"`
+	// +optional
 	NewInstances int32 `json:"newInstances,omitempty"`
 }
 
-// ClusterMigrationState ...
-type ClusterMigrationState string
+type ClusterMigrationCondition struct {
+	// Type is the type of the condition.
+	Type            ClusterMigrationConditionType `json:"type"`
+	StatusCondition `json:",inline"`
+}
+
+// ClusterMigrationConditionType ...
+type ClusterMigrationConditionType string
 
 const (
-	// ClusterMigrationStateCreated ...
-	ClusterMigrationStateCreated ClusterMigrationState = "Created"
-	// ClusterMigrationStateFinished ...
-	ClusterMigrationStateFinished ClusterMigrationState = "Processed"
-	// ClusterMigrationStateError ...
-	ClusterMigrationStateError ClusterMigrationState = "Error"
-	// ClusterMigrationStateMigrating ...
-	ClusterMigrationStateMigrating ClusterMigrationState = "Migrating"
+	// ClusterMigrationConditionTypeCreated ...
+	ClusterMigrationConditionTypeCreated ClusterMigrationConditionType = "Created"
+	// ClusterMigrationConditionTypeProcessed ...
+	ClusterMigrationConditionTypeProcessed ClusterMigrationConditionType = "Processed"
+	// ClusterMigrationConditionTypeErrored ...
+	ClusterMigrationConditionTypeErrored ClusterMigrationConditionType = "Errored"
 )

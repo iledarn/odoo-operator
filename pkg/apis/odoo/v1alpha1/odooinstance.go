@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -31,25 +32,36 @@ type OdooInstanceSpec struct {
 }
 
 type OdooInstanceStatus struct {
-	State   OdooInstanceState `json:"state,omitempty"`
-	Message string            `json:"message,omitempty"`
+	// Current service state of apiService.
+	// +optional
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	Conditions []OdooInstanceCondition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 	// Additional Status
+	// +optional
 	UsedDbQuota int32 `json:"usedDbQuota,omitempty"`
+	// +optional
 	UsedFsQuota int32 `json:"usedFsQuota,omitempty"`
 }
 
-// OdooInstanceState ...
-type OdooInstanceState string
+type OdooInstanceCondition struct {
+	// Type is the type of the condition.
+	Type            OdooInstanceConditionType `json:"type"`
+	StatusCondition `json:",inline"`
+}
+
+// OdooInstanceConditionType ...
+type OdooInstanceConditionType string
 
 const (
-	// OdooInstanceStateCreated ...
-	OdooInstanceStateCreated OdooInstanceState = "Created"
-	// OdooInstanceStateReconciled ...
-	OdooInstanceStateReconciled OdooInstanceState = "Reconciled"
-	// OdooInstanceStateError ...
-	OdooInstanceStateError OdooInstanceState = "Error"
-	// OdooInstanceStateSuspended ...
-	OdooInstanceStateSuspended OdooInstanceState = "Suspended"
-	// OdooInstanceStateMaintenance ...
-	OdooInstanceStateMaintenance OdooInstanceState = "Maintenance"
+	// OdooInstanceConditionTypeCreated ...
+	OdooInstanceConditionTypeCreated OdooInstanceConditionType = "Created"
+	// OdooInstanceConditionTypeReconciled ...
+	OdooInstanceConditionTypeReconciled OdooInstanceConditionType = "Reconciled"
+	// OdooInstanceConditionTypeErrored ...
+	OdooInstanceConditionTypeErrored OdooInstanceConditionType = "Errored"
+	// OdooInstanceConditionTypeSuspended ...
+	OdooInstanceConditionTypeSuspended OdooInstanceConditionType = "Suspended"
+	// OdooInstanceConditionTypeMaintenance ...
+	OdooInstanceConditionTypeMaintenance OdooInstanceConditionType = "Maintenance"
 )

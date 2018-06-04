@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -22,14 +23,16 @@ type OdooCluster struct {
 }
 
 type OdooClusterSpec struct {
-	Images        []ImageSpec             `json:images`
-	PgSpec        PgNamespaceSpec         `json:pgNsSpec`
-	ResourceSpec  OdooClusterResourceSpec `json:resourceSpec`
-	AdminPassword string                  `json:"adminPassword"`
-	ConfigMap     string                  `json:"configMap"`
-	DeployModel   OdooClusterMode         `json:deployModel`
-	NodeSelector  string                  `json:"nodeSelector"`
-	// Replicas         int32                      `json:"replicas"`
+	Tracks            []TrackSpec           `json:tracks`
+	Tiers             []TierSpec            `json:tiers`
+	PgSpec            PgNamespaceSpec       `json:pgNsSpec`
+	ResourceQuotaSpec *v1.ResourceQuotaSpec `json:resourceQuotaSpec,omitempty`
+	AdminPassword     string                `json:"adminPassword"`
+	PgPassFile        string                `json:"pgPassFile"`
+	ConfigMap         string                `json:"configMap"`
+	DeployModel       OdooClusterMode       `json:deployModel`
+	NodeSelector      string                `json:"nodeSelector"`
+	StorageClassName  *string               `json:"storageClassNam"`
 
 	// MailServer  bool `json:"mailServer"`
 	// OnlyOffice  bool `json:"onlyOffice"`
@@ -39,48 +42,59 @@ type OdooClusterSpec struct {
 	// OpenProject bool `json:"openProject"`
 }
 
-type OdooClusterResourceSpec struct {
-	Cpu         int32 `json:"cpu"`
-	Ram         int32 `json:"ram"`
-	Persistence int32 `json:"persistence"`
+type TrackSpec struct {
+	Name  string    `json:"name"`
+	Image ImageSpec `json:"image"`
 }
+
+type TierSpec struct {
+	Name     Tier  `json:"name"`
+	Replicas int32 `json:"replicas"`
+}
+
+type Tier string
+
+const (
+	ServerTier      Tier = "Server"
+	CronTier        Tier = "Cron"
+	BackgroundTier  Tier = "Background"
+	LongpollingTier Tier = "LongPolling"
+)
 
 // OdooClusterMode ...
 type OdooClusterMode string
 
 const (
 	// OdooClusterModeRemote ...
-	OdooClusterModeRemote OdooClusterMode = "remote"
+	OdooClusterModeRemote OdooClusterMode = "Remote"
 	// OdooClusterModeLocal ...
-	OdooClusterModeLocal OdooClusterMode = "local"
+	OdooClusterModeLocal OdooClusterMode = "Local"
 	// OdooClusterModeHybrid ...
-	OdooClusterModeHybrid OdooClusterMode = "hybrid"
+	OdooClusterModeHybrid OdooClusterMode = "Hybrid"
 )
 
 type OdooClusterStatus struct {
-	State   OdooClusterState `json:"state,omitempty"`
-	Message string           `json:"message,omitempty"`
-	// Additional Status
-	UsedDbQuota    string      `json:"usedDbQuota,omitempty"`
-	UsedFsQuota    string      `json:"usedFsQuota,omitempty"`
-	CurrentImage   string      `json:"currentImage,omitempty"`
-	ImageLoadStats []ImageLoad `json:"imageLoadStats,omitempty"`
-	// Replicas     int32               `json:"replicas,omitempty"`
+	// Current service state of apiService.
+	// +optional
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	Conditions []OdooClusterCondition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 }
 
-type ImageLoad struct {
-	Name      string `json:"name"`
-	Instances int32  `json:"instances"`
+type OdooClusterCondition struct {
+	// Type is the type of the condition.
+	Type            OdooClusterConditionType `json:"type"`
+	StatusCondition `json:",inline"`
 }
 
-// OdooClusterState ...
-type OdooClusterState string
+// OdooClusterConditionType ...
+type OdooClusterConditionType string
 
 const (
-	// OdooClusterStateCreated ...
-	OdooClusterStateCreated OdooClusterState = "Created"
-	// OdooClusterStateReconciled ...
-	OdooClusterStateReconciled OdooClusterState = "Reconciled"
-	// OdooClusterStateError ...
-	OdooClusterStateError OdooClusterState = "Error"
+	// OdooClusterConditionTypeCreated ...
+	OdooClusterConditionTypeCreated OdooClusterConditionType = "Created"
+	// OdooClusterConditionTypeReconciled ...
+	OdooClusterConditionTypeReconciled OdooClusterConditionType = "Reconciled"
+	// OdooClusterConditionTypeErrored ...
+	OdooClusterConditionTypeErrored OdooClusterConditionType = "Errored"
 )

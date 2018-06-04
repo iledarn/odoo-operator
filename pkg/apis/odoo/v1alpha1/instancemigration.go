@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,18 +29,27 @@ type InstanceMigrationSpec struct {
 }
 
 type InstanceMigrationStatus struct {
-	State   InstanceMigrationState `json:"state,omitempty"`
-	Message string                 `json:"message,omitempty"`
+	// Current service state of apiService.
+	// +optional
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	Conditions []InstanceMigrationCondition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 }
 
-// InstanceMigrationState ...
-type InstanceMigrationState string
+type InstanceMigrationCondition struct {
+	// Type is the type of the condition.
+	Type            InstanceMigrationConditionType `json:"type"`
+	StatusCondition `json:",inline"`
+}
+
+// InstanceMigrationConditionType ...
+type InstanceMigrationConditionType string
 
 const (
-	// InstanceMigrationStateCreated ...
-	InstanceMigrationStateCreated InstanceMigrationState = "Created"
-	// InstanceMigrationStateProcessed ...
-	InstanceMigrationStateProcessed InstanceMigrationState = "Processed"
-	// InstanceMigrationStateError ...
-	InstanceMigrationStateError InstanceMigrationState = "Error"
+	// InstanceMigrationConditionTypeCreated ...
+	InstanceMigrationConditionTypeCreated InstanceMigrationConditionType = "Created"
+	// InstanceMigrationConditionTypeProcessed ...
+	InstanceMigrationConditionTypeProcessed InstanceMigrationConditionType = "Processed"
+	// InstanceMigrationConditionTypeErrored ...
+	InstanceMigrationConditionTypeErrored InstanceMigrationConditionType = "Errored"
 )

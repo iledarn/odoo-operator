@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	odooDefaultConfigPath = "/opt/odoo/odoorc.d/01-default"
-	odooCustomConfigPath  = "/opt/odoo/odoorc.d/02-custom"
+	odooConfigDir     = "/opt/odoo/odoorc.d"
+	odooDefaultConfig = "01-default"
+	odooCustomConfig  = "02-custom"
 	// Basic Config
-	odooDataDir               = "/var/lib/odoo-persist"
+	odooPersistenceDir        = "/var/lib/odoo-persist"
 	odooWithoutDemo           = "True"
 	odooServerWideModules     = "web,web_kanban,backup_all"
 	odooDbName                = "False"
@@ -38,7 +39,7 @@ const (
 )
 
 func configmapForOdooCluster(cr *api.OdooCluster) *v1.ConfigMap {
-	selector := labelsForOdooCluster(cr.GetName())
+	selector := selectorForOdooCluster(cr.GetName())
 
 	var cfgDefaultData string
 	var cfgCustomData string
@@ -55,10 +56,10 @@ func configmapForOdooCluster(cr *api.OdooCluster) *v1.ConfigMap {
 	cm.Name = configMapNameForOdoo(cr)
 	cm.Labels = selector
 	cfgDefaultData = newConfigWithDefaultParams(cfgDefaultData)
-	cm.Data = map[string]string{filepath.Base(odooDefaultConfigPath): cfgDefaultData}
+	cm.Data = map[string]string{filepath.Base(odooDefaultConfig): cfgDefaultData}
 	if len(cr.Spec.ConfigMap) != 0 {
 		cfgCustomData = cr.Spec.ConfigMap
-		cm.Data[filepath.Base(odooCustomConfigPath)] = cfgCustomData
+		cm.Data[filepath.Base(odooCustomConfig)] = cfgCustomData
 	}
 	addOwnerRefToObject(cm, asOwner(cr))
 
@@ -165,7 +166,7 @@ smtp_password = %s
 func newConfigWithDefaultParams(data string) string {
 	buf := bytes.NewBufferString(data)
 	basicSection := fmt.Sprintf(odooBasicFmt,
-		odooDataDir,
+		odooPersistenceDir,
 		odooWithoutDemo,
 		odooServerWideModules,
 		odooDbName,
@@ -198,5 +199,5 @@ func newConfigWithDefaultParams(data string) string {
 
 // configMapNameForOdoo is the configmap name for the given odoo cluster.
 func configMapNameForOdoo(cr *api.OdooCluster) string {
-	return cr.Name
+	return cr.Name + configVolName
 }

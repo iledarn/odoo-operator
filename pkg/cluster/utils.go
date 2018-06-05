@@ -1,15 +1,30 @@
 package cluster
 
 import (
+	"fmt"
+
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 
+	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// labelsForOdooCluster returns the labels for selecting the resources
+// selectorForOdooCluster returns the labels for selecting the resources
 // belonging to the given OdooCluster CR name.
-func labelsForOdooCluster(name string) map[string]string {
+func selectorForOdooCluster(name string) map[string]string {
 	return map[string]string{"app": "odoo", "odoo_cluster": name}
+}
+
+func getFullName(oc *api.OdooCluster, tr *api.TrackSpec, t *api.TierSpec) string {
+	return fmt.Sprintf("%s-%s-%s", oc.GetName(), tr.Name, t.Name)
+}
+
+func labelsWithTrackAndTier(selector map[string]string, tr *api.TrackSpec, t *api.TierSpec) map[string]string {
+	labels := map[string]string{"track": tr.Name, "tier": t.Name}
+	for k, v := range selector {
+		labels[k] = v
+	}
+	return labels
 }
 
 // addOwnerRefToObject appends the desired OwnerReference to the object
@@ -27,4 +42,8 @@ func asOwner(oc *api.OdooCluster) metav1.OwnerReference {
 		UID:        oc.UID,
 		Controller: &trueVar,
 	}
+}
+
+func getImageName(s *api.ImageSpec) string {
+	return fmt.Sprintf("%s/%s:%s", s.Registry, s.Name, s.Tag)
 }

@@ -25,6 +25,7 @@ type OdooCluster struct {
 type OdooClusterSpec struct {
 	Tracks            []TrackSpec           `json:tracks`
 	Tiers             []TierSpec            `json:tiers`
+	PVCSpecs          []PVCSpec             `json:pvcs,omitempty`
 	PgSpec            PgNamespaceSpec       `json:pgNsSpec`
 	ResourceQuotaSpec *v1.ResourceQuotaSpec `json:resourceQuotaSpec,omitempty`
 	AdminPassword     string                `json:"adminPassword"`
@@ -32,7 +33,6 @@ type OdooClusterSpec struct {
 	ConfigMap         string                `json:"configMap"`
 	DeployModel       OdooClusterMode       `json:deployModel`
 	NodeSelector      string                `json:"nodeSelector"`
-	StorageClassName  *string               `json:"storageClassNam"`
 
 	// MailServer  bool `json:"mailServer"`
 	// OnlyOffice  bool `json:"onlyOffice"`
@@ -42,15 +42,35 @@ type OdooClusterSpec struct {
 	// OpenProject bool `json:"openProject"`
 }
 
+type PVCSpec struct {
+	Name PVCName `json:"name"`
+	// +optional
+	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
+	// +optional
+	StorageClassName *string `json:"storageClassNam"`
+}
+
 type TrackSpec struct {
 	Name  string    `json:"name"`
 	Image ImageSpec `json:"image"`
 }
 
 type TierSpec struct {
-	Name     Tier  `json:"name"`
-	Replicas int32 `json:"replicas"`
+	Name Tier `json:"name"`
+	// +optional
+	Replicas int32 `json:"replicas,omitempty"`
+	// +optional
+	QOS *v1.PodQOSClass `json:"qos,omitempty"`
+	// +optional
+	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
 }
+
+type PVCName string
+
+const (
+	PVCNamePersistence PVCName = "Persistence"
+	PVCNameBackup      PVCName = "Backup"
+)
 
 type Tier string
 

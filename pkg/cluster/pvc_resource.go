@@ -1,7 +1,7 @@
 package cluster
 
 import (
-	// "fmt"
+	"strings"
 
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 	// appsv1 "k8s.io/api/apps/v1"
@@ -13,7 +13,7 @@ import (
 func getPVCsForOdooCluster(cr *api.OdooCluster) []*v1.PersistentVolumeClaim {
 	var pvcs []*v1.PersistentVolumeClaim
 
-	for s := range cr.Spec.PVCSpecs {
+	for _, s := range cr.Spec.PVCSpecs {
 
 		pvc := &v1.PersistentVolumeClaim{
 			TypeMeta: metav1.TypeMeta{
@@ -27,18 +27,18 @@ func getPVCsForOdooCluster(cr *api.OdooCluster) []*v1.PersistentVolumeClaim {
 			},
 			Spec: v1.PersistentVolumeClaimSpec{
 				AccessModes:      []v1.PersistentVolumeAccessMode{v1.ReadWriteMany},
-				Resources:        &s.Resources,
-				VolumeName:       volumeNameForOdoo(cr, s),
-				StorageClassName: &s.StorageClassName,
+				Resources:        s.Resources,
+				VolumeName:       volumeNameForOdoo(cr, &s),
+				StorageClassName: s.StorageClassName,
 			},
 		}
 		addOwnerRefToObject(pvc, asOwner(cr))
-		append(pvcs, pvc)
+		pvcs = append(pvcs, pvc)
 	}
 	return pvcs
 }
 
 // volumeNameForOdoo is the volume name for the given odoo cluster.
 func volumeNameForOdoo(cr *api.OdooCluster, s *api.PVCSpec) string {
-	return cr.GetName() + fmt.Println(strings.ToLower(s.Name))
+	return cr.GetName() + strings.ToLower(string(s.Name))
 }

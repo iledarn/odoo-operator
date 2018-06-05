@@ -7,22 +7,22 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func servicesForOdooTrack(cr *api.OdooCluster, track *api.TrackSpec) []*v1.Service {
+func servicesForOdooTrack(cr *api.OdooCluster, trck *api.TrackSpec) []*v1.Service {
 	selector := selectorForOdooCluster(cr.GetName())
 
 	var services []*v1.Service
 	var svcPorts []v1.ServicePort
 
-	for _, tierSpec := range cr.Tiers {
+	for _, tierSpec := range cr.Spec.Tiers {
 		// Construct the ServicePorts according to the tier or continue
-		switch tierSpec {
-		case *api.ServerTier:
+		switch tierSpec.Name {
+		case api.ServerTier:
 			svcPorts = []v1.ServicePort{{
 				Name:     clientPortName,
 				Protocol: v1.ProtocolTCP,
 				Port:     int32(clientPort),
 			}}
-		case *api.LongpollingTier:
+		case api.LongpollingTier:
 			svcPorts = []v1.ServicePort{{
 				Name:     longpollingPortName,
 				Protocol: v1.ProtocolTCP,
@@ -33,9 +33,9 @@ func servicesForOdooTrack(cr *api.OdooCluster, track *api.TrackSpec) []*v1.Servi
 		}
 
 		objectMeta := metav1.ObjectMeta{
-			Name:      getFullName(cr, trackSpec, tierSpec),
+			Name:      getFullName(cr, trck, &tierSpec),
 			Namespace: cr.GetNamespace(),
-			Labels:    labelsWithTrackAndTier(selector, trackSpec, tierSpec),
+			Labels:    labelsWithTrackAndTier(selector, trck, &tierSpec),
 		}
 		svc := &v1.Service{
 			TypeMeta: metav1.TypeMeta{
@@ -49,7 +49,7 @@ func servicesForOdooTrack(cr *api.OdooCluster, track *api.TrackSpec) []*v1.Servi
 			},
 		}
 		addOwnerRefToObject(svc, asOwner(cr))
-		append(services, svc)
+		services = append(services, svc)
 	}
 	return services
 

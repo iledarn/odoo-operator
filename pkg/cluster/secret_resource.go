@@ -1,10 +1,12 @@
 package cluster
 
 import (
+	"encoding/base64"
+
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 
 	"k8s.io/api/core/v1"
-	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	// "k8s.io/apimachinery/pkg/util/intstr"
 )
 
@@ -21,8 +23,8 @@ func secretForOdooCluster(cr *api.OdooCluster) *v1.Secret {
 			Labels:    selectorForOdooCluster(cr.GetName()),
 		},
 		Data: map[string][]byte{
-			"adminpwd": cr.Spec.AdminPassword,
-			".pgpass":  cr.Spec.PgPassFile,
+			"adminpwd": []byte(base64.StdEncoding.EncodeToString([]byte(cr.Spec.AdminPassword))),
+			".pgpass":  []byte(base64.StdEncoding.EncodeToString([]byte(cr.Spec.PgPassFile))),
 		},
 	}
 	addOwnerRefToObject(se, asOwner(cr))

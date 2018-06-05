@@ -45,7 +45,7 @@ type OdooClusterSpec struct {
 type PVCSpec struct {
 	Name PVCName `json:"name"`
 	// +optional
-	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
+	Resources v1.ResourceRequirements `json:"resources,omitempty"`
 	// +optional
 	StorageClassName *string `json:"storageClassNam"`
 }

@@ -36,7 +36,7 @@ func Reconcile(cr *api.OdooCluster) (err error) {
 	// Check if PgNamespace is ready.
 	// If not, we need to wait until it is provisioned before proceeding;
 	// Hence, we return from here and let the Watch triggers the handler again.
-	ready, err := isPgNamespaceReady(cr.Spec.PgSpec)
+	ready, err := isPgNamespaceReady(&cr.Spec.PgSpec)
 	if err != nil {
 		return fmt.Errorf("failed to check if PgNamespace is ready: %v", err)
 	}
@@ -89,7 +89,7 @@ func Reconcile(cr *api.OdooCluster) (err error) {
 	// TODO Delete deployments
 	// Create or update OdooCluster for every Track
 	for _, t := range cr.Spec.Tracks {
-		for _, d := range deploymentsForOdooTrack(cr, t) {
+		for _, d := range deploymentsForOdooTrack(cr, &t) {
 			err = sdk.Create(d)
 			if err != nil && !errors.IsAlreadyExists(err) {
 				logrus.Errorf("Failed to create odoo cluster : %v", err)
@@ -103,7 +103,7 @@ func Reconcile(cr *api.OdooCluster) (err error) {
 			}
 
 		}
-		for _, s := range servicesForOdooTrack(cr, t) {
+		for _, s := range servicesForOdooTrack(cr, &t) {
 			err = sdk.Create(s)
 			if err != nil && !errors.IsAlreadyExists(err) {
 				logrus.Errorf("Failed to create odoo cluster : %v", err)

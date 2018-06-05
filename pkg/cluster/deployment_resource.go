@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"fmt"
+	"path/filepath"
 
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 
@@ -24,7 +25,7 @@ const (
 	longpollingPort     = 8072
 )
 
-func deploymentsForOdooTrack(cr *api.OdooCluster, trackSpec *api.TrackSpec) []*appsv1.Deployment {
+func deploymentsForOdooTrack(cr *api.OdooCluster, trck *api.TrackSpec) []*appsv1.Deployment {
 	selector := selectorForOdooCluster(cr.GetName())
 	volumes := []v1.Volume{
 		{
@@ -39,18 +40,18 @@ func deploymentsForOdooTrack(cr *api.OdooCluster, trackSpec *api.TrackSpec) []*a
 		},
 	}
 
-	for s := range cr.Spec.PVCSpecs {
+	for _, s := range cr.Spec.PVCSpecs {
 		vol := v1.Volume{
 			// kubernetes.io/pvc-protection
-			Name: volumeNameForOdoo(cr, s),
+			Name: volumeNameForOdoo(cr, &s),
 			VolumeSource: v1.VolumeSource{
 				PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
-					ClaimName: volumeNameForOdoo(cr, s),
+					ClaimName: volumeNameForOdoo(cr, &s),
 					ReadOnly:  false,
 				},
 			},
 		}
-		append(volumes, vol)
+		volumes = append(volumes, vol)
 
 	}
 
@@ -62,17 +63,17 @@ func deploymentsForOdooTrack(cr *api.OdooCluster, trackSpec *api.TrackSpec) []*a
 
 	var deployments []*appsv1.Deployment
 
-	for _, tierSpec := range cr.Tiers {
+	for _, tierSpec := range cr.Spec.Tiers {
 		objectMeta := metav1.ObjectMeta{
-			Name:      getFullName(cr, trackSpec, tierSpec),
+			Name:      getFullName(cr, trck, &tierSpec),
 			Namespace: cr.GetNamespace(),
-			Labels:    labelsWithTrackAndTier(selector, trackSpec, tierSpec),
+			Labels:    labelsWithTrackAndTier(selector, trck, &tierSpec),
 		}
 
 		podTempl := v1.PodTemplateSpec{
-			ObjectMeta: meta,
+			ObjectMeta: objectMeta,
 			Spec: v1.PodSpec{
-				Containers: []v1.Container{odooContainer(cr, trackSpec, tierSpec)},
+				Containers: []v1.Container{odooContainer(cr, trck, &tierSpec)},
 				// Containers: []v1.Container{odooContainer(cr), odooMonitoringContainer(cr)},
 				Volumes:         volumes,
 				SecurityContext: securityContext,
@@ -99,14 +100,14 @@ func deploymentsForOdooTrack(cr *api.OdooCluster, trackSpec *api.TrackSpec) []*a
 			},
 		}
 		addOwnerRefToObject(d, asOwner(cr))
-		append(deployments, d)
+		deployments = append(deployments, d)
 
 	}
 	return deployments
 
 }
 
-func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.TierSpec) v1.Container {
+func odooContainer(cr *api.OdooCluster, trck *api.TrackSpec, tierSpec *api.TierSpec) v1.Container {
 
 	command := getContainerCommand(tierSpec)
 	ports := getContainerPorts(tierSpec)
@@ -126,44 +127,14 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 	}
 
 	c := v1.Container{
-		Name:         getFullName(cr, trackSpec, tierSpec),
-		Image:        getImageName(trackSpec.Image),
+		Name:         getFullName(cr, trck, tierSpec),
+		Image:        getImageName(&trackSpec.Image),
 		Command:      command,
 		VolumeMounts: volumes,
 		Ports:        ports,
-		LivenessProbe: &v1.Probe{
-			Handler: v1.Handler{
-				Exec: &v1.ExecAction{
-					Command: []string{
-						"curl",
-						"--connect-timeout", "5",
-						"--max-time", "10",
-						"-k", "-s",
-						fmt.Sprintf("https://localhost:%d/web", clientPortName),
-					},
-				},
-			},
-			InitialDelaySeconds: 10,
-			TimeoutSeconds:      10,
-			PeriodSeconds:       60,
-			FailureThreshold:    3,
-		},
-		ReadinessProbe: &v1.Probe{
-			Handler: v1.Handler{
-				HTTPGet: &v1.HTTPGetAction{
-					Path:   "/web",
-					Port:   intstr.FromInt(clientPortName),
-					Scheme: v1.URISchemeHTTPS,
-				},
-			},
-			InitialDelaySeconds: 10,
-			TimeoutSeconds:      10,
-			PeriodSeconds:       10,
-			FailureThreshold:    3,
-		},
 	}
-	switch n := tierSpec.Name.(type) {
-	case *api.ServerTier:
+	switch tierSpec.Name {
+	case api.ServerTier:
 		c.LivenessProbe = &v1.Probe{
 			Handler: v1.Handler{
 				Exec: &v1.ExecAction{
@@ -194,7 +165,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 			PeriodSeconds:       10,
 			FailureThreshold:    3,
 		}
-	case *api.LongpollingTier:
+	case api.LongpollingTier:
 		c.LivenessProbe = &v1.Probe{
 			Handler: v1.Handler{
 				Exec: &v1.ExecAction{
@@ -226,40 +197,43 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 			FailureThreshold:    3,
 		}
 	}
+	return c
 }
 
 func getContainerCommand(tierSpec *api.TierSpec) []string {
-	switch n := tierSpec.Name.(type) {
-	case *api.ServerTier:
+	switch tierSpec.Name {
+	case api.ServerTier:
 		return []string{"--config", odooConfigDir}
 		// return []string{"--config", odooConfigDir, "--tier", api.ServerTier}
-	case *api.CronTier:
+	case api.CronTier:
 		return []string{"--config", odooConfigDir}
 		// return []string{"--config", odooConfigDir, "--tier", api.CronTier}
-	case *api.BackgroundTier:
+	case api.BackgroundTier:
 		return []string{"--config", odooConfigDir}
 		// return []string{"--config", odooConfigDir, "--tier", api.BackgroundTier}
-	case *api.LongpollingTier:
+	case api.LongpollingTier:
 		return []string{"--config", odooConfigDir}
 		// return []string{"--config", odooConfigDir, "--tier", api.LongpollingTier}
 	}
+	return nil
 }
 
 func getContainerPorts(tierSpec *api.TierSpec) []v1.ContainerPort {
-	switch n := tierSpec.Name.(type) {
-	case *api.ServerTier:
+	switch tierSpec.Name {
+	case api.ServerTier:
 		return []v1.ContainerPort{{
 			Name:          clientPortName,
 			ContainerPort: int32(clientPort),
 		}}
-	case *api.CronTier:
+	case api.CronTier:
 		return []v1.ContainerPort{}
-	case *api.BackgroundTier:
+	case api.BackgroundTier:
 		return []v1.ContainerPort{}
-	case *api.LongpollingTier:
+	case api.LongpollingTier:
 		return []v1.ContainerPort{{
 			Name:          longpollingPortName,
 			ContainerPort: int32(longpollingPort),
 		}}
 	}
+	return nil
 }

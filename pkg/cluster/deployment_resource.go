@@ -19,7 +19,7 @@ const (
 	// Ports and Port Names
 	clientPortName      = "client-port"
 	clientPort          = 8069
-	longpollingPortName = "longpolling-port"
+	longpollingPortName = "lp-port"
 	longpollingPort     = 8072
 )
 

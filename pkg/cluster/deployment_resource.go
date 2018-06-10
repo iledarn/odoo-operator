@@ -14,9 +14,7 @@ import (
 
 const (
 	// Volume Names
-	configVolName      = "config"
-	persistenceVolName = "persistence"
-	backupVolName      = "backup"
+	configVolName = "config"
 
 	// Ports and Port Names
 	clientPortName      = "client-port"
@@ -116,13 +114,12 @@ func odooContainer(cr *api.OdooCluster, trck *api.TrackSpec, tierSpec *api.TierS
 			Name:      configVolName,
 			MountPath: filepath.Dir(odooConfigDir),
 		},
+	}
+
+	for _, s := range cr.Spec.PVCSpecs {
 		{
-			Name:      persistenceVolName,
-			MountPath: filepath.Dir(odooPersistenceDir),
-		},
-		{
-			Name:      backupVolName,
-			MountPath: filepath.Dir(odooBackupDir),
+			Name:      volumeNameForOdoo(cr, &s),
+			MountPath: filepath.Dir(mountPathForPVC(&s)),
 		},
 	}
 
@@ -236,4 +233,13 @@ func getContainerPorts(tierSpec *api.TierSpec) []v1.ContainerPort {
 		}}
 	}
 	return nil
+}
+
+func mountPathForPVC(s *api.PVCSpec) (string) {
+	switch s.Name {
+	case PVCNamePersistence:
+		return odooPersistenceDir
+	case PVCNameBackup:
+		return odooBackupDir
+	}
 }

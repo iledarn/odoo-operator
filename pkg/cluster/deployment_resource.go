@@ -23,7 +23,7 @@ const (
 	longpollingPort     = 8072
 )
 
-func deploymentsForOdooTrack(cr *api.OdooCluster, trck *api.TrackSpec) []*appsv1.Deployment {
+func deploymentsForOdooTrack(cr *api.OdooCluster, trackSpec *api.TrackSpec) []*appsv1.Deployment {
 	selector := selectorForOdooCluster(cr.GetName())
 	volumes := []v1.Volume{
 		{
@@ -63,15 +63,15 @@ func deploymentsForOdooTrack(cr *api.OdooCluster, trck *api.TrackSpec) []*appsv1
 
 	for _, tierSpec := range cr.Spec.Tiers {
 		objectMeta := metav1.ObjectMeta{
-			Name:      getFullName(cr, trck, &tierSpec),
+			Name:      getFullName(cr, trackSpec, &tierSpec),
 			Namespace: cr.GetNamespace(),
-			Labels:    labelsWithTrackAndTier(selector, trck, &tierSpec),
+			Labels:    labelsWithTrackAndTier(selector, trackSpec, &tierSpec),
 		}
 
 		podTempl := v1.PodTemplateSpec{
 			ObjectMeta: objectMeta,
 			Spec: v1.PodSpec{
-				Containers: []v1.Container{odooContainer(cr, trck, &tierSpec)},
+				Containers: []v1.Container{odooContainer(cr, trackSpec, &tierSpec)},
 				// Containers: []v1.Container{odooContainer(cr), odooMonitoringContainer(cr)},
 				Volumes:         volumes,
 				SecurityContext: securityContext,
@@ -105,7 +105,7 @@ func deploymentsForOdooTrack(cr *api.OdooCluster, trck *api.TrackSpec) []*appsv1
 
 }
 
-func odooContainer(cr *api.OdooCluster, trck *api.TrackSpec, tierSpec *api.TierSpec) v1.Container {
+func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.TierSpec) v1.Container {
 
 	command := getContainerCommand(tierSpec)
 	ports := getContainerPorts(tierSpec)
@@ -117,14 +117,14 @@ func odooContainer(cr *api.OdooCluster, trck *api.TrackSpec, tierSpec *api.TierS
 	}
 
 	for _, s := range cr.Spec.PVCSpecs {
-		{
+		volumes = append(volumes, v1.VolumeMount{
 			Name:      volumeNameForOdoo(cr, &s),
 			MountPath: filepath.Dir(mountPathForPVC(&s)),
-		},
+		})
 	}
 
 	c := v1.Container{
-		Name:         getFullName(cr, trck, tierSpec),
+		Name:         getFullName(cr, trackSpec, tierSpec),
 		Image:        getImageName(&trackSpec.Image),
 		Command:      command,
 		VolumeMounts: volumes,
@@ -235,11 +235,12 @@ func getContainerPorts(tierSpec *api.TierSpec) []v1.ContainerPort {
 	return nil
 }
 
-func mountPathForPVC(s *api.PVCSpec) (string) {
+func mountPathForPVC(s *api.PVCSpec) string {
 	switch s.Name {
-	case PVCNamePersistence:
+	case api.PVCNamePersistence:
 		return odooPersistenceDir
-	case PVCNameBackup:
+	case api.PVCNameBackup:
 		return odooBackupDir
 	}
+	return ""
 }

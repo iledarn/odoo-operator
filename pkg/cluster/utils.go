@@ -5,7 +5,6 @@ import (
 
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 
-	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -20,7 +19,7 @@ func getFullName(oc *api.OdooCluster, tr *api.TrackSpec, t *api.TierSpec) string
 }
 
 func labelsWithTrackAndTier(selector map[string]string, tr *api.TrackSpec, t *api.TierSpec) map[string]string {
-	labels := map[string]string{"track": tr.Name, "tier": t.Name}
+	labels := map[string]string{"track": tr.Name, "tier": string(t.Name)}
 	for k, v := range selector {
 		labels[k] = v
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func crForPgNamespace(cr *api.OdooCluster) *api.PgNamespace {
-	return &api.PgNamespace{
+	pgns := &api.PgNamespace{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PgNamespace",
 			APIVersion: "odoo.k8s.io/v1alpha1",
@@ -19,4 +19,6 @@ func crForPgNamespace(cr *api.OdooCluster) *api.PgNamespace {
 		},
 		Spec: cr.Spec.PgSpec,
 	}
+	addOwnerRefToObject(pgns, asOwner(cr))
+	return pgns
 }

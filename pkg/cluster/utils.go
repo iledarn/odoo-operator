@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"fmt"
+	"strings"
 
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 
@@ -15,7 +16,7 @@ func selectorForOdooCluster(name string) map[string]string {
 }
 
 func getFullName(oc *api.OdooCluster, tr *api.TrackSpec, t *api.TierSpec) string {
-	return fmt.Sprintf("%s-%s-%s", oc.GetName(), tr.Name, t.Name)
+	return fmt.Sprintf("%s-%s-%s", oc.GetName(), tr.Name, strings.ToLower(string(t.Name)))
 }
 
 func labelsWithTrackAndTier(selector map[string]string, tr *api.TrackSpec, t *api.TierSpec) map[string]string {

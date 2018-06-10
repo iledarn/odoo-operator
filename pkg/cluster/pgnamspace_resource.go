@@ -9,8 +9,8 @@ import (
 func crForPgNamespace(cr *api.OdooCluster) *api.PgNamespace {
 	return &api.PgNamespace{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "CustomResource",
-			APIVersion: "apiextensions.k8s.io/v1beta1",
+			Kind:       "PgNamespace",
+			APIVersion: "odoo.k8s.io/v1alpha1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      cr.GetName(),

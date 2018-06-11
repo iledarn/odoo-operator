@@ -513,6 +513,15 @@ func (in *OdooClusterSpec) DeepCopyInto(out *OdooClusterSpec) {
 			(*in).DeepCopyInto(*out)
 		}
 	}
+	if in.NodeSelector != nil {
+		in, out := &in.NodeSelector, &out.NodeSelector
+		if *in == nil {
+			*out = nil
+		} else {
+			*out = new(string)
+			**out = **in
+		}
+	}
 	return
 }
 

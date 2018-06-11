@@ -7,7 +7,7 @@ import (
 
 type ImageSpec struct {
 	Registry string `json:"registry"`
-	Name     string `json:"image"`
+	Image    string `json:"image"`
 	Tag      string `json:"tag"`
 }
 

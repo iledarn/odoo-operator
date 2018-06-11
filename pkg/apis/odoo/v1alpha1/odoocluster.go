@@ -5,6 +5,22 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	defaultTrackName     = "stable"
+	defaultRegistry      = "docker.io"
+	defaultImage         = "xoe-labs/odoo"
+	defaultTag           = "latest"
+	defaultAdminPassword = "admin-password"
+	defaultPgPassFile    = "db:*:*:odoo:odoo"
+	defaultClusterMode   = OdooClusterModeRemote
+)
+
+var defultImage = ImageSpec{
+	Registry: defaultRegistry,
+	Image:    defaultImage,
+	Tag:      defaultTag,
+}
+
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 type OdooClusterList struct {
@@ -22,6 +38,43 @@ type OdooCluster struct {
 	Status            OdooClusterStatus `json:"status,omitempty"`
 }
 
+// SetDefaults sets the default values for the OdooCluster spec and returns true if the spec was changed
+func (c *OdooCluster) SetDefaults() bool {
+	changed := false
+	cs := &c.Spec
+	if len(cs.Tracks) == 0 {
+		cs.Tracks = []TrackSpec{{
+			Name:  defaultTrackName,
+			Image: defultImage,
+		}}
+		changed = true
+	}
+	if len(cs.Tiers) == 0 {
+		cs.Tiers = []TierSpec{{Name: ServerTier}}
+		changed = true
+	}
+	if cs.PVCSpecs == nil {
+		cs.PVCSpecs = []PVCSpec{
+			{Name: PVCNamePersistence},
+			{Name: PVCNameBackup},
+		}
+		changed = true
+	}
+	if len(cs.AdminPassword) == 0 {
+		cs.AdminPassword = defaultAdminPassword
+		changed = true
+	}
+	if len(cs.PgPassFile) == 0 {
+		cs.PgPassFile = defaultPgPassFile
+		changed = true
+	}
+	if cs.DeployModel == "" {
+		cs.DeployModel = OdooClusterModeRemote
+		changed = true
+	}
+	return changed
+}
+
 type OdooClusterSpec struct {
 	Tracks            []TrackSpec           `json:tracks`
 	Tiers             []TierSpec            `json:tiers`
@@ -31,8 +84,8 @@ type OdooClusterSpec struct {
 	AdminPassword     string                `json:"adminPassword"`
 	PgPassFile        string                `json:"pgPassFile"`
 	ConfigMap         string                `json:"configMap"`
-	DeployModel       OdooClusterMode       `json:deployModel`
-	NodeSelector      string                `json:"nodeSelector"`
+	DeployModel       OdooClusterMode       `json:deployModel,omitempty`
+	NodeSelector      *string               `json:"nodeSelector,omitempy"`
 
 	// MailServer  bool `json:"mailServer"`
 	// OnlyOffice  bool `json:"onlyOffice"`

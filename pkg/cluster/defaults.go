@@ -3,13 +3,17 @@ package cluster
 import (
 	"bytes"
 	"fmt"
-	"path/filepath"
+)
 
-	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
+const (
+	// Volume Names
+	configVolName = "config"
 
-	"k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	// "k8s.io/apimachinery/pkg/util/intstr"
+	// Ports and Port Names
+	clientPortName      = "client-port"
+	clientPort          = 8069
+	longpollingPortName = "lp-port"
+	longpollingPort     = 8072
 )
 
 const (
@@ -37,34 +41,6 @@ const (
 	odooSMTPUser     = ""
 	odooSMTPPassword = ""
 )
-
-func configmapForOdooCluster(cr *api.OdooCluster) *v1.ConfigMap {
-	selector := selectorForOdooCluster(cr.GetName())
-
-	var cfgDefaultData string
-	var cfgCustomData string
-
-	cm := &v1.ConfigMap{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "ConfigMap",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Namespace: cr.Namespace,
-		},
-	}
-	cm.Name = configMapNameForOdoo(cr)
-	cm.Labels = selector
-	cfgDefaultData = newConfigWithDefaultParams(cfgDefaultData)
-	cm.Data = map[string]string{filepath.Base(odooDefaultConfig): cfgDefaultData}
-	if len(cr.Spec.ConfigMap) != 0 {
-		cfgCustomData = cr.Spec.ConfigMap
-		cm.Data[filepath.Base(odooCustomConfig)] = cfgCustomData
-	}
-	addOwnerRefToObject(cm, asOwner(cr))
-
-	return cm
-}
 
 const odooBasicFmt = `
 [options]
@@ -195,9 +171,4 @@ func newConfigWithDefaultParams(data string) string {
 	buf.WriteString(SMTPSection)
 
 	return buf.String()
-}
-
-// configMapNameForOdoo is the configmap name for the given odoo cluster.
-func configMapNameForOdoo(cr *api.OdooCluster) string {
-	return cr.Name + configVolName
 }

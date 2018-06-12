@@ -45,5 +45,5 @@ func asOwner(oc *api.OdooCluster) metav1.OwnerReference {
 }
 
 func getImageName(s *api.ImageSpec) string {
-	return fmt.Sprintf("%s/%s:%s", s.Registry, s.Name, s.Tag)
+	return fmt.Sprintf("%s/%s:%s", s.Registry, s.Image, s.Tag)
 }

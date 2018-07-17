@@ -17,19 +17,20 @@ const (
 )
 
 const (
-	odooConfigDir     = "/opt/odoo/odoorc.d"
+	odooConfigDir     = "/opt/odoo/odoorc.d/"
 	odooDefaultConfig = "01-default"
 	odooCustomConfig  = "02-custom"
 	// Basic Config
-	odooPersistenceDir        = "/var/lib/odoo-persist"
+	odooVolumeMountPath       = "/mnt/odoo/"
+	odooPersistenceDir        = odooVolumeMountPath + "persist/"
 	odooWithoutDemo           = "True"
 	odooServerWideModules     = "web,web_kanban,backup_all"
 	odooDbName                = "False"
 	odooDbTemplate            = "template1"
 	odooListDb                = "False"
 	odooDbFilter              = "^%h$"
-	odooBackupDir             = "/var/lib/odoo-backups"
-	odooIntegratorWarrantyURL = "https://xoe.solutions/integrator-warranty/"
+	odooBackupDir             = odooVolumeMountPath + "backups/"
+	odooIntegratorWarrantyURL = "https://erp.xoe.solutions/integrator-warranty/"
 	// Log Config
 	odooLogLevel = ":INFO"
 	// Multiproc Config

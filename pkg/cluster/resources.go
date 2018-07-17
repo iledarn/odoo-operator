@@ -1,7 +1,6 @@
 package cluster
 
 import (
-	"path/filepath"
 	"strings"
 
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
@@ -49,13 +48,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) error {
 		return nil
 
 	case *v1.PersistentVolumeClaim:
-		s := c.Spec.PVCSpecs[i[0]]
-		o.Spec = v1.PersistentVolumeClaimSpec{
-			AccessModes:      []v1.PersistentVolumeAccessMode{v1.ReadWriteMany},
-			Resources:        s.Resources,
-			VolumeName:       volumeNameForOdoo(c, &s),
-			StorageClassName: s.StorageClassName,
-		}
+		o.Spec = c.Spec.Volumes[i[0]].Spec
 		return nil
 
 	case *v1.ConfigMap:
@@ -63,10 +56,10 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) error {
 		var cfgCustomData string
 
 		cfgDefaultData = newConfigWithDefaultParams(cfgDefaultData)
-		o.Data = map[string]string{filepath.Base(odooDefaultConfig): cfgDefaultData}
+		o.Data = map[string]string{odooDefaultConfig: cfgDefaultData}
 		if len(c.Spec.ConfigMap) != 0 {
 			cfgCustomData = c.Spec.ConfigMap
-			o.Data[filepath.Base(odooCustomConfig)] = cfgCustomData
+			o.Data[odooCustomConfig] = cfgCustomData
 		}
 		return nil
 
@@ -84,7 +77,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) error {
 			},
 		}
 
-		for _, s := range c.Spec.PVCSpecs {
+		for _, s := range c.Spec.Volumes {
 			vol := v1.Volume{
 				// kubernetes.io/pvc-protection
 				Name: volumeNameForOdoo(c, &s),
@@ -166,7 +159,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) error {
 }
 
 // volumeNameForOdoo is the volume name for the given odoo cluster.
-func volumeNameForOdoo(cr *api.OdooCluster, s *api.PVCSpec) string {
+func volumeNameForOdoo(cr *api.OdooCluster, s *api.Volume) string {
 	return cr.GetName() + strings.ToLower(string(s.Name))
 }
 

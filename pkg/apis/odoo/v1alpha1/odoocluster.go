@@ -1,9 +1,9 @@
 package v1alpha1
 
 import (
+	"github.com/sirupsen/logrus"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -56,13 +56,12 @@ func (c *OdooCluster) SetDefaults() bool {
 		logrus.Infof("Applying default for Tiers (%+v)", cs.Tiers)
 		changed = true
 	}
-	if cs.PVCSpecs == nil {
-		cs.PVCSpecs = []PVCSpec{
-			{Name: PVCNamePersistence},
-			{Name: PVCNameBackup},
+	for i, v := range cs.Volumes {
+		if v.Spec.AccessModes == nil {
+			cs.Volumes[i].Spec.AccessModes = []v1.PersistentVolumeAccessMode{v1.ReadWriteMany}
+			logrus.Infof("Applying AccessMode for Volumes (%+v)", cs.Volumes)
+			changed = true
 		}
-		logrus.Infof("Applying default for PVCSpecs (%+v)", cs.PVCSpecs)
-		changed = true
 	}
 	if len(cs.AdminPassword) == 0 {
 		cs.AdminPassword = defaultAdminPassword
@@ -85,7 +84,7 @@ func (c *OdooCluster) SetDefaults() bool {
 type OdooClusterSpec struct {
 	Tracks            []TrackSpec           `json:"tracks"`
 	Tiers             []TierSpec            `json:"tiers"`
-	PVCSpecs          []PVCSpec             `json:"pvcs,omitempty"`
+	Volumes           []Volume              `json:"volumes,omitempty"`
 	PgSpec            PgNamespaceSpec       `json:"pgNsSpec"`
 	ResourceQuotaSpec *v1.ResourceQuotaSpec `json:"resourceQuotaSpec,omitempty"`
 	AdminPassword     string                `json:"adminPassword"`
@@ -102,14 +101,6 @@ type OdooClusterSpec struct {
 	// OpenProject bool `json:"openProject"`
 }
 
-type PVCSpec struct {
-	Name PVCName `json:"name"`
-	// +optional
-	Resources v1.ResourceRequirements `json:"resources,omitempty"`
-	// +optional
-	StorageClassName *string `json:"storageClassNam"`
-}
-
 type TrackSpec struct {
 	Name  string    `json:"name"`
 	Image ImageSpec `json:"image"`
@@ -124,12 +115,14 @@ type TierSpec struct {
 	// +optional
 	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
 }
-
-type PVCName string
+type Volume struct {
+	Name string                       `json:"name"`
+	Spec v1.PersistentVolumeClaimSpec `json:"spec"`
+}
 
 const (
-	PVCNamePersistence PVCName = "Persistence"
-	PVCNameBackup      PVCName = "Backup"
+	PVCNamePersistence = "Persistence"
+	PVCNameBackup      = "Backup"
 )
 
 type Tier string

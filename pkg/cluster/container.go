@@ -3,7 +3,9 @@ package cluster
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
+	// "github.com/sirupsen/logrus"
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -20,7 +22,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 		},
 	}
 
-	for _, s := range cr.Spec.PVCSpecs {
+	for _, s := range cr.Spec.Volumes {
 		volumes = append(volumes, v1.VolumeMount{
 			Name:      volumeNameForOdoo(cr, &s),
 			MountPath: filepath.Dir(mountPathForPVC(&s)),
@@ -139,12 +141,12 @@ func getContainerPorts(tierSpec *api.TierSpec) []v1.ContainerPort {
 	return nil
 }
 
-func mountPathForPVC(s *api.PVCSpec) string {
+func mountPathForPVC(s *api.Volume) string {
 	switch s.Name {
 	case api.PVCNamePersistence:
 		return odooPersistenceDir
 	case api.PVCNameBackup:
 		return odooBackupDir
 	}
-	return ""
+	return odooVolumeMountPath + strings.ToLower(string(s.Name)) + "/"
 }

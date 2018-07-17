@@ -125,8 +125,13 @@ func Reconcile(c *api.OdooCluster) (err error) {
 
 	// Reconcile PVC(s) for the cluster
 	// TODO: Tear down of variadic resources
-	for i, _ := range c.Spec.PVCSpecs {
-		pvc := &v1.PersistentVolumeClaim{TypeMeta: pvcMetaType, ObjectMeta: objectMeta}
+	for i, v := range c.Spec.Volumes {
+		objectMetaPVC := metav1.ObjectMeta{
+			Name:      volumeNameForOdoo(c, &v),
+			Namespace: c.GetNamespace(),
+			Labels:    selectorForOdooCluster(c.GetName()),
+		}
+		pvc := &v1.PersistentVolumeClaim{TypeMeta: pvcMetaType, ObjectMeta: objectMetaPVC}
 		if err := reconcileResource(pvc, c, builder, syncer, i); err != nil {
 			logrus.Errorf("Failed to reconcile %s (%s/%s): %v", pvc.Kind, c.Namespace, pvc.Name, err)
 			return err

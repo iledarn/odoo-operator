@@ -108,6 +108,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 
 	// Reconcile the PgNamespace for the cluster
 	pgns := &api.PgNamespace{TypeMeta: pgNamespaceMetaType, ObjectMeta: objectMeta}
+	logrus.Debugf("Reconciler (PgNamespace-Obj) ----- %+v", pgns)
 	if err := reconcileResource(pgns, c, builder, syncer); err != nil {
 		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", pgns.Kind, c.Namespace, pgns.Name, err)
 		return err
@@ -141,6 +142,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 
 	// Reconcile the ConfigMap for the cluster
 	cm := &v1.ConfigMap{TypeMeta: cmMetaType, ObjectMeta: objectMeta}
+	logrus.Debugf("Reconciler (ConfigMap-Obj) ----- %+v", cm)
 	if err := reconcileResource(cm, c, builder, syncer); err != nil {
 		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", cm.Kind, c.Namespace, cm.Name, err)
 		return err
@@ -148,6 +150,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 
 	// Reconcile the Secret for the cluster
 	se := &v1.Secret{TypeMeta: secMetaType, ObjectMeta: objectMeta}
+	logrus.Debugf("Reconciler (Secret-Obj) ----- %+v", se)
 	if err := reconcileResource(se, c, builder, syncer); err != nil {
 		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", se.Kind, c.Namespace, se.Name, err)
 		return err
@@ -165,6 +168,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 				Labels:    labelsWithTrackAndTier(selector, &trs, &tis),
 			}
 			d := &appsv1.Deployment{TypeMeta: deployMetaType, ObjectMeta: objectMetaDeployment}
+			logrus.Debugf("Reconciler (Deployment-Obj) ----- %+v", d)
 			if err := reconcileResource(d, c, builder, syncer, i, j); err != nil {
 				logrus.Errorf("Failed to reconcile %s (%s/%s): %v", d.Kind, c.Namespace, d.Name, err)
 				return err
@@ -172,7 +176,9 @@ func Reconcile(c *api.OdooCluster) (err error) {
 
 			switch tis.Name {
 			case api.ServerTier, api.LongpollingTier:
+
 				svc := &v1.Service{TypeMeta: svcMetaType, ObjectMeta: objectMetaDeployment}
+				logrus.Debugf("Reconciler (Service-Obj) ----- %+v", svc)
 				if err := reconcileResource(svc, c, builder, syncer, i, j); err != nil {
 					logrus.Errorf("Failed to reconcile %s (%s/%s): %v", svc.Kind, c.Namespace, svc.Name, err)
 					return err

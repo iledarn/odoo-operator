@@ -3,6 +3,7 @@ package cluster
 import (
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/api/core/v1"
@@ -45,10 +46,14 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) error {
 
 	case *api.PgNamespace:
 		o.Spec = c.Spec.PgSpec
+
+		logrus.Debugf("Syncer (PgNamespace-Spec) +++++ %+v", o.Spec)
 		return nil
 
 	case *v1.PersistentVolumeClaim:
 		o.Spec = c.Spec.Volumes[i[0]].Spec
+
+		logrus.Debugf("Syncer (PVC-Spec) +++++ %+v", o.Spec)
 		return nil
 
 	case *v1.ConfigMap:
@@ -61,6 +66,8 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) error {
 			cfgCustomData = c.Spec.ConfigMap
 			o.Data[odooCustomConfig] = cfgCustomData
 		}
+
+		logrus.Debugf("Syncer (ConfigMap-Spec) +++++ %+v", o.Data)
 		return nil
 
 	case *appsv1.Deployment:
@@ -125,6 +132,8 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) error {
 				},
 			},
 		}
+
+		logrus.Debugf("Syncer (Deployment-Spec) +++++ %+v", o.Spec)
 		return nil
 
 	case *v1.Service:
@@ -152,6 +161,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) error {
 			Ports:    svcPorts,
 		}
 
+		logrus.Debugf("Syncer (Service-Spec) +++++ %+v", o.Spec)
 		return nil
 
 	}

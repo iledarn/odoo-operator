@@ -22,14 +22,14 @@ type InstanceBackup struct {
 }
 
 type InstanceBackupSpec struct {
-	OdooInstance   string                 `json:odooInstance`
-	BackupStrategy InstanceBackupStrategy `json:backupStrategy`
-	BackupTarget   InstanceBackupTarget   `json:backupTarget`
+	OdooInstance   string                 `json:"odooInstance"`
+	BackupStrategy InstanceBackupStrategy `json:"backupStrategy"`
+	BackupTarget   InstanceBackupTarget   `json:"backupTarget"`
 }
 
 type InstanceBackupStrategy struct {
-	Name          InstanceBackupStrategyName `json:name`
-	StorageTarget string                     `json:storageTarget` // package strategy only
+	Name          InstanceBackupStrategyName `json:"name"`
+	StorageTarget string                     `json:"storageTarget"` // package strategy only
 }
 
 // InstanceBackupStrategyName ...

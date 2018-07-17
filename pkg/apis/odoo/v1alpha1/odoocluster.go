@@ -3,6 +3,7 @@ package v1alpha1
 import (
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -47,10 +48,12 @@ func (c *OdooCluster) SetDefaults() bool {
 			Name:  defaultTrackName,
 			Image: defultImage,
 		}}
+		logrus.Infof("Applying default for Tracks (%+v)", cs.Tracks)
 		changed = true
 	}
 	if len(cs.Tiers) == 0 {
 		cs.Tiers = []TierSpec{{Name: ServerTier}}
+		logrus.Infof("Applying default for Tiers (%+v)", cs.Tiers)
 		changed = true
 	}
 	if cs.PVCSpecs == nil {
@@ -58,33 +61,37 @@ func (c *OdooCluster) SetDefaults() bool {
 			{Name: PVCNamePersistence},
 			{Name: PVCNameBackup},
 		}
+		logrus.Infof("Applying default for PVCSpecs (%+v)", cs.PVCSpecs)
 		changed = true
 	}
 	if len(cs.AdminPassword) == 0 {
 		cs.AdminPassword = defaultAdminPassword
+		logrus.Infof("Applying default for AdminPassword (%v)", cs.AdminPassword)
 		changed = true
 	}
 	if len(cs.PgPassFile) == 0 {
 		cs.PgPassFile = defaultPgPassFile
+		logrus.Infof("Applying default for PgPassFile (%v)", cs.PgPassFile)
 		changed = true
 	}
 	if cs.DeployModel == "" {
 		cs.DeployModel = OdooClusterModeRemote
+		logrus.Infof("Applying default for DeployModel (%v)", cs.DeployModel)
 		changed = true
 	}
 	return changed
 }
 
 type OdooClusterSpec struct {
-	Tracks            []TrackSpec           `json:tracks`
-	Tiers             []TierSpec            `json:tiers`
-	PVCSpecs          []PVCSpec             `json:pvcs,omitempty`
-	PgSpec            PgNamespaceSpec       `json:pgNsSpec`
-	ResourceQuotaSpec *v1.ResourceQuotaSpec `json:resourceQuotaSpec,omitempty`
+	Tracks            []TrackSpec           `json:"tracks"`
+	Tiers             []TierSpec            `json:"tiers"`
+	PVCSpecs          []PVCSpec             `json:"pvcs,omitempty"`
+	PgSpec            PgNamespaceSpec       `json:"pgNsSpec"`
+	ResourceQuotaSpec *v1.ResourceQuotaSpec `json:"resourceQuotaSpec,omitempty"`
 	AdminPassword     string                `json:"adminPassword"`
 	PgPassFile        string                `json:"pgPassFile"`
 	ConfigMap         string                `json:"configMap"`
-	DeployModel       OdooClusterMode       `json:deployModel,omitempty`
+	DeployModel       OdooClusterMode       `json:"deployModel,omitempty"`
 	NodeSelector      *string               `json:"nodeSelector,omitempy"`
 
 	// MailServer  bool `json:"mailServer"`

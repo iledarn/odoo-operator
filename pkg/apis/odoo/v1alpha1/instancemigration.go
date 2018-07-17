@@ -22,9 +22,9 @@ type InstanceMigration struct {
 }
 
 type InstanceMigrationSpec struct {
-	OdooInstance     string `json:odooInstance`
-	ClusterMigration string `json:clusterMigration`
-	RedirectInfoPage string `json:redirectInfoPage`
+	OdooInstance     string `json:"odooInstance"`
+	ClusterMigration string `json:"clusterMigration"`
+	RedirectInfoPage string `json:"redirectInfoPage"`
 }
 
 type InstanceMigrationStatus struct {

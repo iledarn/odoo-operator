@@ -22,9 +22,9 @@ type OdooInstance struct {
 }
 
 type OdooInstanceSpec struct {
-	OdooCluster string `json:odooCluster`
+	OdooCluster string `json:"odooCluster"`
 	// DbName         string      `json:dbName`
-	HostName       string `json:hostName`
+	HostName       string `json:"hostName"`
 	DbSeedCfgMap   string `json:"dbSeedCfgMap"`
 	DbQuota        int32  `json:"dbQuota"`
 	FilestoreQuota int32  `json:"fsQuota"`

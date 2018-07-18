@@ -59,7 +59,7 @@ func (c *OdooCluster) SetDefaults() bool {
 	for i, v := range cs.Volumes {
 		if v.Spec.AccessModes == nil {
 			cs.Volumes[i].Spec.AccessModes = []v1.PersistentVolumeAccessMode{v1.ReadWriteMany}
-			logrus.Infof("Applying AccessMode for Volumes (%+v)", cs.Volumes)
+			logrus.Infof("Applying default AccessMode for Volume (%v): %v", v.Name, cs.Volumes[i].Spec.AccessModes)
 			changed = true
 		}
 	}

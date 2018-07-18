@@ -25,11 +25,12 @@ import (
 //
 // Passing indices helps flatten the resource building and synching while delegating looping entirely to the main
 // reconcilation sequence. Althoug it seems complicated, this is a very transparent and maintainable code organization.
-func reconcileResource(stub runtime.Object, cr *api.OdooCluster, build func(runtime.Object, *api.OdooCluster, ...int) error, sync func(runtime.Object, *api.OdooCluster, ...int) error, idx ...int) error {
+func reconcileResource(stub runtime.Object, cr *api.OdooCluster, build func(runtime.Object, *api.OdooCluster, ...int) (string, error), sync func(runtime.Object, *api.OdooCluster, ...int) (bool, error), idx ...int) error {
 	newObj := stub.DeepCopyObject()
 	oldObj := stub.DeepCopyObject()
 
-	if err := build(newObj, cr, idx...); err != nil {
+	name, err := build(newObj, cr, idx...)
+	if err != nil {
 		return err
 	}
 	if err := sdk.Create(newObj); err != nil && !errors.IsAlreadyExists(err) {
@@ -39,14 +40,26 @@ func reconcileResource(stub runtime.Object, cr *api.OdooCluster, build func(runt
 		if err := sdk.Get(oldObj); err != nil {
 			return fmt.Errorf("failed to get: %v", err)
 		}
-		if err := sync(oldObj, cr, idx...); err != nil {
+		changed, err := sync(oldObj, cr, idx...)
+		if err != nil {
 			return err
 		}
 		if err := sdk.Update(oldObj); err != nil {
 			logrus.Errorf("failed to update: %v", err)
 			return err
 		}
+		if changed {
+			logrus.WithFields(logrus.Fields{
+				"name":     name,
+				"typeMeta": newObj.GetObjectKind(),
+			}).Info("Updated")
+		}
+		return nil
 	}
+	logrus.WithFields(logrus.Fields{
+		"name":     name,
+		"typeMeta": newObj.GetObjectKind(),
+	}).Info("Created")
 	return nil
 
 }

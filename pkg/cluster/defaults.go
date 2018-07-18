@@ -10,10 +10,10 @@ const (
 	configVolName = "config"
 
 	// Ports and Port Names
-	clientPortName      = "client-port"
-	clientPort          = 8069
-	longpollingPortName = "lp-port"
-	longpollingPort     = 8072
+	clientPortName      string = "client-port"
+	clientPort                 = 8069
+	longpollingPortName        = "lp-port"
+	longpollingPort            = 8072
 )
 
 const (

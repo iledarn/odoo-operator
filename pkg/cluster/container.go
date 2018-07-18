@@ -35,6 +35,9 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 		Command:      command,
 		VolumeMounts: volumes,
 		Ports:        ports,
+		TerminationMessagePath:   "/dev/termination-log",
+		TerminationMessagePolicy: v1.TerminationMessageReadFile,
+		ImagePullPolicy:          v1.PullAlways,
 	}
 	switch tierSpec.Name {
 	case api.ServerTier:
@@ -54,6 +57,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 			TimeoutSeconds:      10,
 			PeriodSeconds:       60,
 			FailureThreshold:    3,
+			SuccessThreshold:    1,
 		}
 		c.ReadinessProbe = &v1.Probe{
 			Handler: v1.Handler{
@@ -67,6 +71,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 			TimeoutSeconds:      10,
 			PeriodSeconds:       10,
 			FailureThreshold:    3,
+			SuccessThreshold:    1,
 		}
 	case api.LongpollingTier:
 		c.LivenessProbe = &v1.Probe{
@@ -85,6 +90,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 			TimeoutSeconds:      10,
 			PeriodSeconds:       60,
 			FailureThreshold:    3,
+			SuccessThreshold:    1,
 		}
 		c.ReadinessProbe = &v1.Probe{
 			Handler: v1.Handler{
@@ -98,6 +104,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 			TimeoutSeconds:      10,
 			PeriodSeconds:       10,
 			FailureThreshold:    3,
+			SuccessThreshold:    1,
 		}
 	}
 	return c
@@ -127,6 +134,7 @@ func getContainerPorts(tierSpec *api.TierSpec) []v1.ContainerPort {
 		return []v1.ContainerPort{{
 			Name:          clientPortName,
 			ContainerPort: int32(clientPort),
+			Protocol:      v1.ProtocolTCP,
 		}}
 	case api.CronTier:
 		return []v1.ContainerPort{}
@@ -136,6 +144,7 @@ func getContainerPorts(tierSpec *api.TierSpec) []v1.ContainerPort {
 		return []v1.ContainerPort{{
 			Name:          longpollingPortName,
 			ContainerPort: int32(longpollingPort),
+			Protocol:      v1.ProtocolTCP,
 		}}
 	}
 	return nil

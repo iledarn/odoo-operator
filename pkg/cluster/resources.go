@@ -156,10 +156,8 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) error {
 				Port:     int32(longpollingPort),
 			}}
 		}
-		o.Spec = v1.ServiceSpec{
-			Selector: selector,
-			Ports:    svcPorts,
-		}
+		o.Spec.Selector = selector
+		o.Spec.Ports = svcPorts
 
 		logrus.Debugf("Syncer (Service-Spec) +++++ %+v", o.Spec)
 		return nil

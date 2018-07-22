@@ -92,7 +92,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 				VolumeSource: v1.VolumeSource{
 					ConfigMap: &v1.ConfigMapVolumeSource{
 						LocalObjectReference: v1.LocalObjectReference{
-							Name: configMapNameForOdoo(c),
+							Name: c.GetName(),
 						},
 						DefaultMode: func(a int32) *int32 { return &a }(420),
 					},
@@ -210,9 +210,4 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 // volumeNameForOdoo is the volume name for the given odoo cluster.
 func volumeNameForOdoo(cr *api.OdooCluster, s *api.Volume) string {
 	return cr.GetName() + strings.ToLower(string(s.Name))
-}
-
-// configMapNameForOdoo is the config volume name for the given odoo cluster.
-func configMapNameForOdoo(cr *api.OdooCluster) string {
-	return cr.GetName() + "config"
 }

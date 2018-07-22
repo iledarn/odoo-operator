@@ -13,7 +13,7 @@ import (
 
 func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.TierSpec) v1.Container {
 
-	command := getContainerCommand(tierSpec)
+	args := getContainerArgs(tierSpec)
 	ports := getContainerPorts(tierSpec)
 	volumes := []v1.VolumeMount{
 		{
@@ -32,7 +32,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 	c := v1.Container{
 		Name:         getFullName(cr, trackSpec, tierSpec),
 		Image:        getImageName(&trackSpec.Image),
-		Command:      command,
+		Args:         args,
 		VolumeMounts: volumes,
 		Ports:        ports,
 		TerminationMessagePath:   "/dev/termination-log",
@@ -110,7 +110,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 	return c
 }
 
-func getContainerCommand(tierSpec *api.TierSpec) []string {
+func getContainerArgs(tierSpec *api.TierSpec) []string {
 	switch tierSpec.Name {
 	case api.ServerTier:
 		return []string{"--config", odooConfigDir}

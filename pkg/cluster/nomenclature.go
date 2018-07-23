@@ -47,3 +47,8 @@ func asOwner(oc *api.OdooCluster) metav1.OwnerReference {
 func getImageName(s *api.ImageSpec) string {
 	return fmt.Sprintf("%s/%s:%s", s.Registry, s.Image, s.Tag)
 }
+
+// getVolumeName is the volume name for the given odoo cluster.
+func getVolumeName(cr *api.OdooCluster, s string) string {
+	return cr.GetName() + strings.ToLower(s)
+}

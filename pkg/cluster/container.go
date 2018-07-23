@@ -17,14 +17,20 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 	ports := getContainerPorts(tierSpec)
 	volumes := []v1.VolumeMount{
 		{
-			Name:      configVolName,
+			Name:      getVolumeName(cr, configVolName),
 			MountPath: filepath.Dir(odooConfigDir),
+			ReadOnly:  true,
+		},
+		{
+			Name:      getVolumeName(cr, secretVolName),
+			MountPath: filepath.Dir(odooSecretDir),
+			ReadOnly:  true,
 		},
 	}
 
 	for _, s := range cr.Spec.Volumes {
 		volumes = append(volumes, v1.VolumeMount{
-			Name:      volumeNameForOdoo(cr, &s),
+			Name:      getVolumeName(cr, s.Name),
 			MountPath: filepath.Dir(mountPathForPVC(&s)),
 		})
 	}

@@ -1,6 +1,9 @@
 package cluster
 
 import (
+	"bytes"
+	b64 "encoding/base64"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -85,14 +88,29 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 		logrus.Debugf("Syncer (ConfigMap-Spec) +++++ %+v", o.Data)
 		return changed, nil
 
+	case *v1.Secret:
+		var secPsql string
+		var secAdmin string
+
+		secPsqlBuf := newPsqlSecretWithParams(secPsql, &c.Spec.PgSpec)
+		newSpec := map[string][]byte{odooPsqlSecret: secPsqlBuf}
+		secAdminBuf := newAdminSecretWithParams(secAdmin, &c.Spec.AdminPassword)
+		newSpec[odooAdminSecret] = secAdminBuf
+		if !reflect.DeepEqual(o.Data, newSpec) {
+			changed = true
+			o.Data = newSpec
+		}
+		logrus.Debugf("Syncer (Secret-Spec) +++++ %+v", o.Data)
+		return changed, nil
+
 	case *appsv1.Deployment:
 		volumes := []v1.Volume{
 			{
-				Name: configVolName,
+				Name: getVolumeName(c, configVolName),
 				VolumeSource: v1.VolumeSource{
 					ConfigMap: &v1.ConfigMapVolumeSource{
 						LocalObjectReference: v1.LocalObjectReference{
-							Name: c.GetName(),
+							Name: getVolumeName(c, configVolName),
 						},
 						DefaultMode: func(a int32) *int32 { return &a }(420),
 					},
@@ -103,10 +121,10 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 		for _, s := range c.Spec.Volumes {
 			vol := v1.Volume{
 				// kubernetes.io/pvc-protection
-				Name: volumeNameForOdoo(c, &s),
+				Name: getVolumeName(c, s.Name),
 				VolumeSource: v1.VolumeSource{
 					PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
-						ClaimName: volumeNameForOdoo(c, &s),
+						ClaimName: getVolumeName(c, s.Name),
 						ReadOnly:  false,
 					},
 				},
@@ -207,7 +225,22 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 	return changed, nil
 }
 
-// volumeNameForOdoo is the volume name for the given odoo cluster.
-func volumeNameForOdoo(cr *api.OdooCluster, s *api.Volume) string {
-	return cr.GetName() + strings.ToLower(string(s.Name))
+func newPsqlSecretWithParams(data string, p *api.PgNamespaceSpec) []byte {
+	buf := bytes.NewBufferString(data)
+	secret := fmt.Sprintf(odooPsqlSecretFmt,
+		p.PgCluster.Host,
+		p.PgCluster.Port,
+		p.User,
+		p.Password)
+	buf.WriteString(secret)
+	dst := b64.StdEncoding.EncodeToString(buf.Bytes())
+	return []byte(dst)
+}
+
+func newAdminSecretWithParams(data string, pwd *string) []byte {
+	buf := bytes.NewBufferString(data)
+	secret := fmt.Sprintf(odooAdminSecretFmt, &pwd)
+	buf.WriteString(secret)
+	dst := b64.StdEncoding.EncodeToString(buf.Bytes())
+	return []byte(dst)
 }

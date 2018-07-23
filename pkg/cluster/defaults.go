@@ -8,6 +8,7 @@ import (
 const (
 	// Volume Names
 	configVolName = "config"
+	secretVolName = "secret"
 
 	// Ports and Port Names
 	clientPortName      string = "client-port"
@@ -20,6 +21,9 @@ const (
 	odooConfigDir     = "/opt/odoo/odoorc.d/"
 	odooDefaultConfig = "01-default"
 	odooCustomConfig  = "02-custom"
+	odooSecretDir     = "/run/secrets/odoo/"
+	odooPsqlSecret    = "pgpass"
+	odooAdminSecret   = "adminpwd"
 	// Basic Config
 	odooVolumeMountPath       = "/mnt/odoo/"
 	odooPersistenceDir        = odooVolumeMountPath + "persist/"
@@ -173,3 +177,12 @@ func newConfigWithDefaultParams(data string) string {
 
 	return buf.String()
 }
+
+const odooPsqlSecretFmt = `
+# hostname:port:database:username:password
+# If an entry needs to contain : or \, escape this character with \
+%s:%s:*:%s:%s
+`
+const odooAdminSecretFmt = `%s
+
+`

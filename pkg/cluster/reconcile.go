@@ -141,7 +141,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 	// TODO: Tear down of variadic resources
 	for i, v := range c.Spec.Volumes {
 		objectMetaPVC := metav1.ObjectMeta{
-			Name:      volumeNameForOdoo(c, &v),
+			Name:      getVolumeName(c, v.Name),
 			Namespace: c.GetNamespace(),
 			Labels:    selectorForOdooCluster(c.GetName()),
 		}

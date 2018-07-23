@@ -12,7 +12,6 @@ const (
 	defaultImage         = "xoe-labs/odoo"
 	defaultTag           = "latest"
 	defaultAdminPassword = "admin-password"
-	defaultPgPassFile    = "db:*:*:odoo:odoo"
 	defaultClusterMode   = OdooClusterModeRemote
 )
 
@@ -68,11 +67,6 @@ func (c *OdooCluster) SetDefaults() bool {
 		logrus.Infof("Applying default for AdminPassword (%v)", cs.AdminPassword)
 		changed = true
 	}
-	if len(cs.PgPassFile) == 0 {
-		cs.PgPassFile = defaultPgPassFile
-		logrus.Infof("Applying default for PgPassFile (%v)", cs.PgPassFile)
-		changed = true
-	}
 	if cs.DeployModel == "" {
 		cs.DeployModel = OdooClusterModeRemote
 		logrus.Infof("Applying default for DeployModel (%v)", cs.DeployModel)
@@ -88,7 +82,6 @@ type OdooClusterSpec struct {
 	PgSpec            PgNamespaceSpec       `json:"pgNsSpec"`
 	ResourceQuotaSpec *v1.ResourceQuotaSpec `json:"resourceQuotaSpec,omitempty"`
 	AdminPassword     string                `json:"adminPassword"`
-	PgPassFile        string                `json:"pgPassFile"`
 	ConfigMap         string                `json:"configMap"`
 	DeployModel       OdooClusterMode       `json:"deployModel,omitempty"`
 	NodeSelector      *string               `json:"nodeSelector,omitempy"`

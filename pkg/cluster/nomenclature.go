@@ -52,3 +52,15 @@ func getImageName(s *api.ImageSpec) string {
 func getVolumeName(cr *api.OdooCluster, s string) string {
 	return cr.GetName() + strings.ToLower(s)
 }
+
+func getMountPath(key string) string {
+	return appMountPath + strings.ToLower(key) + "/"
+}
+
+func getSecretFile(key string) string {
+	return appSecretsPath + strings.ToLower(key)
+}
+
+func getConfigFile(key string) string {
+	return appConfigsPath + strings.ToLower(key)
+}

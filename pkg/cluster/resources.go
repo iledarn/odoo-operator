@@ -5,7 +5,6 @@ import (
 	b64 "encoding/base64"
 	"fmt"
 	"reflect"
-	"strings"
 
 	"github.com/sirupsen/logrus"
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
@@ -76,10 +75,10 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 		var cfgCustomData string
 
 		cfgDefaultData = newConfigWithDefaultParams(cfgDefaultData)
-		newSpec := map[string]string{odooDefaultConfig: cfgDefaultData}
+		newSpec := map[string]string{appDefaultConfigKey: cfgDefaultData}
 		if len(c.Spec.ConfigMap) != 0 {
 			cfgCustomData = c.Spec.ConfigMap
-			newSpec[odooCustomConfig] = cfgCustomData
+			newSpec[appCustomConfigKey] = cfgCustomData
 		}
 		if !reflect.DeepEqual(o.Data, newSpec) {
 			changed = true
@@ -93,9 +92,9 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 		var secAdmin string
 
 		secPsqlBuf := newPsqlSecretWithParams(secPsql, &c.Spec.PgSpec)
-		newSpec := map[string][]byte{odooPsqlSecret: secPsqlBuf}
+		newSpec := map[string][]byte{appPsqlSecretKey: secPsqlBuf}
 		secAdminBuf := newAdminSecretWithParams(secAdmin, &c.Spec.AdminPassword)
-		newSpec[odooAdminSecret] = secAdminBuf
+		newSpec[appAdminSecretKey] = secAdminBuf
 		if !reflect.DeepEqual(o.Data, newSpec) {
 			changed = true
 			o.Data = newSpec
@@ -112,6 +111,15 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 						LocalObjectReference: v1.LocalObjectReference{
 							Name: getVolumeName(c, configVolName),
 						},
+						DefaultMode: func(a int32) *int32 { return &a }(420),
+					},
+				},
+			},
+			{
+				Name: getVolumeName(c, secretVolName),
+				VolumeSource: v1.VolumeSource{
+					Secret: &v1.SecretVolumeSource{
+						SecretName:  getVolumeName(c, secretVolName),
 						DefaultMode: func(a int32) *int32 { return &a }(420),
 					},
 				},
@@ -243,4 +251,38 @@ func newAdminSecretWithParams(data string, pwd *string) []byte {
 	buf.WriteString(secret)
 	dst := b64.StdEncoding.EncodeToString(buf.Bytes())
 	return []byte(dst)
+}
+
+func newConfigWithDefaultParams(data string) string {
+	buf := bytes.NewBufferString(data)
+	basicSection := fmt.Sprintf(odooBasicFmt,
+		getMountPath(appPersistenceKey),
+		odooWithoutDemo,
+		odooServerWideModules,
+		odooDbName,
+		odooDbTemplate,
+		odooListDb,
+		odooDbFilter,
+		getMountPath(appBackupKey),
+		odooIntegratorWarrantyURL)
+	buf.WriteString(basicSection)
+
+	loggingSection := fmt.Sprintf(odooLoggingFmt,
+		odooLogLevel)
+	buf.WriteString(loggingSection)
+
+	// multiprocSection := fmt.Sprintf(odooMultiprocFmt,
+	// 	"")
+	buf.WriteString(odooMultiprocFmt)
+
+	SMTPSection := fmt.Sprintf(odooSMTPFmt,
+		odooSMTPMail,
+		odooSMTPServer,
+		odooSMTPPort,
+		odooSMTPSsl,
+		odooSMTPUser,
+		odooSMTPPassword)
+	buf.WriteString(SMTPSection)
+
+	return buf.String()
 }

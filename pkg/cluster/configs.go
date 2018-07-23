@@ -1,10 +1,5 @@
 package cluster
 
-import (
-	"bytes"
-	"fmt"
-)
-
 const odooBasicFmt = `
 [options]
 
@@ -101,40 +96,6 @@ smtp_ssl = %s
 smtp_user = %s
 smtp_password = %s
 `
-
-func newConfigWithDefaultParams(data string) string {
-	buf := bytes.NewBufferString(data)
-	basicSection := fmt.Sprintf(odooBasicFmt,
-		odooPersistenceDir,
-		odooWithoutDemo,
-		odooServerWideModules,
-		odooDbName,
-		odooDbTemplate,
-		odooListDb,
-		odooDbFilter,
-		odooBackupDir,
-		odooIntegratorWarrantyURL)
-	buf.WriteString(basicSection)
-
-	loggingSection := fmt.Sprintf(odooLoggingFmt,
-		odooLogLevel)
-	buf.WriteString(loggingSection)
-
-	// multiprocSection := fmt.Sprintf(odooMultiprocFmt,
-	// 	"")
-	buf.WriteString(odooMultiprocFmt)
-
-	SMTPSection := fmt.Sprintf(odooSMTPFmt,
-		odooSMTPMail,
-		odooSMTPServer,
-		odooSMTPPort,
-		odooSMTPSsl,
-		odooSMTPUser,
-		odooSMTPPassword)
-	buf.WriteString(SMTPSection)
-
-	return buf.String()
-}
 
 const odooPsqlSecretFmt = `
 # hostname:port:database:username:password

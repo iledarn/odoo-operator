@@ -3,7 +3,6 @@ package cluster
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 
 	// "github.com/sirupsen/logrus"
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
@@ -18,12 +17,12 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 	volumes := []v1.VolumeMount{
 		{
 			Name:      getVolumeName(cr, configVolName),
-			MountPath: filepath.Dir(odooConfigDir),
+			MountPath: filepath.Dir(appConfigsPath),
 			ReadOnly:  true,
 		},
 		{
 			Name:      getVolumeName(cr, secretVolName),
-			MountPath: filepath.Dir(odooSecretDir),
+			MountPath: filepath.Dir(appSecretsPath),
 			ReadOnly:  true,
 		},
 	}
@@ -31,7 +30,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 	for _, s := range cr.Spec.Volumes {
 		volumes = append(volumes, v1.VolumeMount{
 			Name:      getVolumeName(cr, s.Name),
-			MountPath: filepath.Dir(mountPathForPVC(&s)),
+			MountPath: filepath.Dir(getMountPath(s.Name)),
 		})
 	}
 
@@ -46,15 +45,15 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 			},
 			{
 				Name:  envPGPASSFILE,
-				Value: odooSecretDir + odooPsqlSecret,
+				Value: getSecretFile(appPsqlSecretKey),
 			},
 			{
 				Name:  envODOORC,
-				Value: odooConfigDir,
+				Value: appConfigsPath,
 			},
 			{
 				Name:  envODOOPASSFILE,
-				Value: odooSecretDir + odooAdminSecret,
+				Value: getSecretFile(appAdminSecretKey),
 			},
 		},
 		VolumeMounts: volumes,
@@ -137,17 +136,17 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 func getContainerArgs(tierSpec *api.TierSpec) []string {
 	switch tierSpec.Name {
 	case api.ServerTier:
-		return []string{"--config", odooConfigDir}
-		// return []string{"--config", odooConfigDir, "--tier", api.ServerTier}
+		return []string{"--config", appConfigsPath}
+		// return []string{"--config", appConfigsPath, "--tier", api.ServerTier}
 	case api.CronTier:
-		return []string{"--config", odooConfigDir}
-		// return []string{"--config", odooConfigDir, "--tier", api.CronTier}
+		return []string{"--config", appConfigsPath}
+		// return []string{"--config", appConfigsPath, "--tier", api.CronTier}
 	case api.BackgroundTier:
-		return []string{"--config", odooConfigDir}
-		// return []string{"--config", odooConfigDir, "--tier", api.BackgroundTier}
+		return []string{"--config", appConfigsPath}
+		// return []string{"--config", appConfigsPath, "--tier", api.BackgroundTier}
 	case api.LongpollingTier:
-		return []string{"--config", odooConfigDir}
-		// return []string{"--config", odooConfigDir, "--tier", api.LongpollingTier}
+		return []string{"--config", appConfigsPath}
+		// return []string{"--config", appConfigsPath, "--tier", api.LongpollingTier}
 	}
 	return nil
 }
@@ -172,14 +171,4 @@ func getContainerPorts(tierSpec *api.TierSpec) []v1.ContainerPort {
 		}}
 	}
 	return nil
-}
-
-func mountPathForPVC(s *api.Volume) string {
-	switch s.Name {
-	case api.PVCNamePersistence:
-		return odooPersistenceDir
-	case api.PVCNameBackup:
-		return odooBackupDir
-	}
-	return odooVolumeMountPath + strings.ToLower(string(s.Name)) + "/"
 }

@@ -13,29 +13,38 @@ const (
 )
 
 const (
-	envPGHOST         = "PGHOST"
-	envPGPASSFILE     = "PGPASSFILE"
-	envODOORC         = "ODOO_RC"
-	envODOOPASSFILE   = "ODOO_PASSFILE"
-	odooConfigDir     = "/opt/odoo/odoorc.d/"
-	odooDefaultConfig = "01-default"
-	odooCustomConfig  = "02-custom"
-	odooSecretDir     = "/run/secrets/odoo/"
-	odooPsqlSecret    = "pgpass"
-	odooAdminSecret   = "adminpwd"
+	// Environment Variables
+	envPGHOST       = "PGHOST"
+	envPGPASSFILE   = "PGPASSFILE"
+	envODOORC       = "ODOO_RC"
+	envODOOPASSFILE = "ODOO_PASSFILE"
+
+	// App paths
+	appMountPath   = "/mnt/odoo/"
+	appBasePath    = "/opt/odoo/"
+	appSecretsPath = "/run/secrets/odoo/"
+	appConfigsPath = "/run/configs/odoo/"
+
+	// ConfigMaps, Secrets & Volumes Keys
+	appDefaultConfigKey = "default"
+	appCustomConfigKey  = "override"
+	appPsqlSecretKey    = "pgpass"
+	appAdminSecretKey   = "adminpwd"
+	appPersistenceKey   = "persist"
+	appBackupKey        = "backups"
+
 	// Basic Config
-	odooVolumeMountPath       = "/mnt/odoo/"
-	odooPersistenceDir        = odooVolumeMountPath + "persist/"
 	odooWithoutDemo           = "True"
 	odooServerWideModules     = "web,web_kanban,backup_all"
 	odooDbName                = "False"
 	odooDbTemplate            = "template1"
 	odooListDb                = "False"
 	odooDbFilter              = "^%h$"
-	odooBackupDir             = odooVolumeMountPath + "backups/"
 	odooIntegratorWarrantyURL = "https://erp.xoe.solutions/integrator-warranty/"
+
 	// Log Config
 	odooLogLevel = ":INFO"
+
 	// Multiproc Config
 	// SMTP Server Config
 	odooSMTPMail     = ""

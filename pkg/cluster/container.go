@@ -36,9 +36,27 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 	}
 
 	c := v1.Container{
-		Name:         getFullName(cr, trackSpec, tierSpec),
-		Image:        getImageName(&trackSpec.Image),
-		Args:         args,
+		Name:  getFullName(cr, trackSpec, tierSpec),
+		Image: getImageName(&trackSpec.Image),
+		Args:  args,
+		Env: []v1.EnvVar{
+			{
+				Name:  envPGHOST,
+				Value: cr.Spec.PgSpec.PgCluster.Host,
+			},
+			{
+				Name:  envPGPASSFILE,
+				Value: odooSecretDir + odooPsqlSecret,
+			},
+			{
+				Name:  envODOORC,
+				Value: odooConfigDir,
+			},
+			{
+				Name:  envODOOPASSFILE,
+				Value: odooSecretDir + odooAdminSecret,
+			},
+		},
 		VolumeMounts: volumes,
 		Ports:        ports,
 		TerminationMessagePath:   "/dev/termination-log",

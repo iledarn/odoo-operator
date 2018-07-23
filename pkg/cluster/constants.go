@@ -40,6 +40,7 @@ const (
 	odooDbTemplate            = "template1"
 	odooListDb                = "False"
 	odooDbFilter              = "^%h$"
+	odooPublisherWarrantyURL  = "http://services.openerp.com/publisher-warranty/"
 	odooIntegratorWarrantyURL = "https://erp.xoe.solutions/integrator-warranty/"
 
 	// Log Config

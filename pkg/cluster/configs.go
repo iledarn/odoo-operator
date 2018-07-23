@@ -36,7 +36,7 @@ dbfilter = %s
 unaccent = True
 ; geoip_database = /usr/share/GeoIP/GeoLiteCity.dat
 ; csv_internal_sep = ,
-; publisher_warranty_url = http://services.openerp.com/publisher-warranty/
+publisher_warranty_url = %s
 ; reportgz = False
 ; shell_interface = [ipython|ptpython|bpython|python]
 

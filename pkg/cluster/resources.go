@@ -263,6 +263,7 @@ func newConfigWithDefaultParams(data string) string {
 		odooDbTemplate,
 		odooListDb,
 		odooDbFilter,
+		odooPublisherWarrantyURL,
 		getMountPath(appBackupKey),
 		odooIntegratorWarrantyURL)
 	buf.WriteString(basicSection)

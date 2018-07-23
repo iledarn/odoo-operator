@@ -123,7 +123,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 	pgns := &api.PgNamespace{TypeMeta: pgNamespaceMetaType, ObjectMeta: objectMeta}
 	logrus.Debugf("Reconciler (PgNamespace-Obj) ----- %+v", pgns)
 	if err := reconcileResource(pgns, c, builder, syncer); err != nil {
-		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", pgns.Kind, c.Namespace, pgns.Name, err)
+		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", pgns.Kind, c.Namespace, pgns.GetName(), err)
 		return err
 	}
 
@@ -147,7 +147,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 		}
 		pvc := &v1.PersistentVolumeClaim{TypeMeta: pvcMetaType, ObjectMeta: objectMetaPVC}
 		if err := reconcileResource(pvc, c, builder, syncer, i); err != nil {
-			logrus.Errorf("Failed to reconcile %s (%s/%s): %v", pvc.Kind, c.Namespace, pvc.Name, err)
+			logrus.Errorf("Failed to reconcile %s (%s/%s): %v", pvc.Kind, c.Namespace, pvc.GetName(), err)
 			return err
 		}
 
@@ -157,7 +157,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 	cm := &v1.ConfigMap{TypeMeta: cmMetaType, ObjectMeta: objectMeta}
 	logrus.Debugf("Reconciler (ConfigMap-Obj) ----- %+v", cm)
 	if err := reconcileResource(cm, c, builder, syncer); err != nil {
-		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", cm.Kind, c.Namespace, cm.Name, err)
+		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", cm.Kind, c.Namespace, cm.GetName(), err)
 		return err
 	}
 
@@ -165,7 +165,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 	se := &v1.Secret{TypeMeta: secMetaType, ObjectMeta: objectMeta}
 	logrus.Debugf("Reconciler (Secret-Obj) ----- %+v", se)
 	if err := reconcileResource(se, c, builder, syncer); err != nil {
-		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", se.Kind, c.Namespace, se.Name, err)
+		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", se.Kind, c.Namespace, se.GetName(), err)
 		return err
 	}
 
@@ -183,7 +183,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 			d := &appsv1.Deployment{TypeMeta: deployMetaType, ObjectMeta: objectMetaDeployment}
 			logrus.Debugf("Reconciler (Deployment-Obj) ----- %+v", d)
 			if err := reconcileResource(d, c, builder, syncer, i, j); err != nil {
-				logrus.Errorf("Failed to reconcile %s (%s/%s): %v", d.Kind, c.Namespace, d.Name, err)
+				logrus.Errorf("Failed to reconcile %s (%s/%s): %v", d.Kind, c.Namespace, d.GetName(), err)
 				return err
 			}
 
@@ -193,7 +193,7 @@ func Reconcile(c *api.OdooCluster) (err error) {
 				svc := &v1.Service{TypeMeta: svcMetaType, ObjectMeta: objectMetaDeployment}
 				logrus.Debugf("Reconciler (Service-Obj) ----- %+v", svc)
 				if err := reconcileResource(svc, c, builder, syncer, i, j); err != nil {
-					logrus.Errorf("Failed to reconcile %s (%s/%s): %v", svc.Kind, c.Namespace, svc.Name, err)
+					logrus.Errorf("Failed to reconcile %s (%s/%s): %v", svc.Kind, c.Namespace, svc.GetName(), err)
 					return err
 				}
 			}

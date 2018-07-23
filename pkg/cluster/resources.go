@@ -109,7 +109,8 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 				VolumeSource: v1.VolumeSource{
 					ConfigMap: &v1.ConfigMapVolumeSource{
 						LocalObjectReference: v1.LocalObjectReference{
-							Name: getVolumeName(c, configVolName),
+							// We don't use suffixes on sinlgeton resources
+							Name: c.GetName(),
 						},
 						DefaultMode: func(a int32) *int32 { return &a }(420),
 					},
@@ -119,7 +120,8 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 				Name: getVolumeName(c, secretVolName),
 				VolumeSource: v1.VolumeSource{
 					Secret: &v1.SecretVolumeSource{
-						SecretName:  getVolumeName(c, secretVolName),
+						// We don't use suffixes on sinlgeton resources
+						SecretName:  c.GetName(),
 						DefaultMode: func(a int32) *int32 { return &a }(420),
 					},
 				},

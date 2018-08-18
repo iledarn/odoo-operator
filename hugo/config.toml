@@ -4,7 +4,7 @@ title = "Odoo-Operator"
 theme = "elate"
 
 [params]
-  
+
   # custom_css = ["css/custom1.css", "css/custom2.css"]
 
   # Meta
@@ -16,7 +16,7 @@ theme = "elate"
 
     # You can add custom links before or after the default links
     # Assign a weight to define the order
-    
+
     # prepended links
     [[menu.prepend]]
      url = "https://coreos.com/operators/"
@@ -28,12 +28,12 @@ theme = "elate"
     #  url = "http://gohugo.io"
     #  name = "External link"
     #  weight = 10
-  
+
   # Hero section
   [params.hero]
     title = "![Odoo-Operator](images/Odoo-Operator-mixed.svg)"
     subtitle = '''
-Deploy and operatate your <a href="https://odoo.com/" target="_blank">Odoo</a> or <a href="https://flectrahq.com/" target="_blank">Flectra</a> instances reliably at scale based atop kubernetes. Kind of Odoo.sh, yet without reinventing the wheel.
+Deploy and operatate your <a href="https://odoo.com/" target="_blank">Odoo</a> instances reliably at scale based atop kubernetes. Kind of Odoo.sh, yet without reinventing the wheel.
 
 [![GitHub stars](https://img.shields.io/github/stars/xoe-labs/odoo-operator.svg?longCache=true&style=flat-square&logo=github&label=Stars)](https://github.com/xoe-labs/odoo-operator)
 [![By XOE Labs](https://img.shields.io/badge/by-XOE Labs-F26524.svg?longCache=true&style=flat-square)](https://xoe.solutions)
@@ -87,12 +87,12 @@ We are moving fast:
 
      [[params.services.item]]
       title = "Backups"
-      description = "Create automatic and manual incremental snapshots or packaged backups for your database and filestore."      
+      description = "Create automatic and manual incremental snapshots or packaged backups for your database and filestore."
       icon = "icon-layers2"
 
      [[params.services.item]]
       title = "Migration"
-      description = "Create migration instances and jobs to migrate your databases automatically, fully integrated with the Odoo migration API."      
+      description = "Create migration instances and jobs to migrate your databases automatically, fully integrated with the Odoo migration API."
       icon = "icon-control-forward"
 
     # About section
@@ -121,15 +121,4 @@ We are moving fast:
       social = [
         ["icon-globe", "https://xoe-labs.github.io/dockery-odoo-scaffold"],
         ["icon-home", "https://github.com/xoe-labs/dockery-odoo-scaffold"]
-      ]
-
-    [[params.about.item]]
-      name = "Odoo Patches"
-      position = "A curated patch collection for Odoo / Flectra"
-      description = ""
-      img = "Odoo-Patches-color.svg"
-      alt = "XOE Odoo Patches"
-      social = [
-        ["icon-globe", "https://xoe-labs.github.io/odoo-patches"],
-        ["icon-home", "https://github.com/xoe-labs/odoo-patches"]
       ]

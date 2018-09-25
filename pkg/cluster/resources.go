@@ -112,7 +112,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 							// We don't use suffixes on sinlgeton resources
 							Name: c.GetName(),
 						},
-						DefaultMode: func(a int32) *int32 { return &a }(420),
+						DefaultMode: func(a int32) *int32 { return &a }(272), // octal 0420
 					},
 				},
 			},
@@ -122,7 +122,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 					Secret: &v1.SecretVolumeSource{
 						// We don't use suffixes on sinlgeton resources
 						SecretName:  c.GetName(),
-						DefaultMode: func(a int32) *int32 { return &a }(420),
+						DefaultMode: func(a int32) *int32 { return &a }(256), // octal 0400
 					},
 				},
 			},

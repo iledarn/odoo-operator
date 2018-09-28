@@ -53,6 +53,10 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 				Value: cr.Spec.PgSpec.PgCluster.Host,
 			},
 			{
+				Name:  envPGUSER,
+				Value: cr.Spec.PgSpec.User,
+			},
+			{
 				Name: envPGPASSFILE,
 				// TODO: until proper fix of https://github.com/kubernetes/kubernetes/issues/2630
 				Value: "/run/secrets/patched/" + appPsqlSecretKey,

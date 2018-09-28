@@ -15,6 +15,7 @@ const (
 const (
 	// Environment Variables
 	envPGHOST       = "PGHOST"
+	envPGUSER       = "PGUSER"
 	envPGPASSFILE   = "PGPASSFILE"
 	envODOORC       = "ODOO_RC"
 	envODOOPASSFILE = "ODOO_PASSFILE"

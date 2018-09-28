@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"bytes"
-	b64 "encoding/base64"
 	"fmt"
 	"reflect"
 
@@ -243,16 +242,14 @@ func newPsqlSecretWithParams(data string, p *api.PgNamespaceSpec) []byte {
 		p.User,
 		p.Password)
 	buf.WriteString(secret)
-	dst := b64.StdEncoding.EncodeToString(buf.Bytes())
-	return []byte(dst)
+	return []byte(buf.Bytes())
 }
 
 func newAdminSecretWithParams(data string, pwd *string) []byte {
 	buf := bytes.NewBufferString(data)
 	secret := fmt.Sprintf(odooAdminSecretFmt, &pwd)
 	buf.WriteString(secret)
-	dst := b64.StdEncoding.EncodeToString(buf.Bytes())
-	return []byte(dst)
+	return []byte(buf.Bytes())
 }
 
 func newConfigWithDefaultParams(data string) string {

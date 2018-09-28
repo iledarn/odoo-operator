@@ -1,0 +1,60 @@
+apiVersion: "odoo.k8s.io/v1alpha1"
+kind: "OdooCluster"
+metadata:
+  name: "mausi"
+  namespace: "odoo"
+spec:
+  tracks:
+    - name: "v10"
+      image:
+        registry: "docker.io"
+        image: "xoelabs/dockery-odoo"
+        tag: "v10"
+    # - name: "v11"
+    #   image:
+    #     registry: "docker.io"
+    #     name: "xoelabs/dockery-odoo"
+    #     tag: "v11"
+  tiers:
+    - name: "Server"
+      replicas: 1
+      # qos:
+      # resources:
+    - name: "Cron"
+      replicas: 1
+    - name: "Background"
+      replicas: 1
+    - name: "LongPolling"
+      replicas: 1
+  volumes:
+    - name: "Persistence"
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests: 
+            storage: 5Gi
+      # storageClassName:
+    - name: "Backup"
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests: 
+            storage: 3Gi
+      # storageClassName:
+  pgNsSpec:
+    user: "odoo"
+    password: "odoo"
+    # userQuota: 
+    pgCluster:
+      # Previous deployment of an external service is recommended
+      host: "database"
+      port: "5432"
+      user: "postgres"
+      password: "postgres"
+  # resourceQuotaSpec:
+  adminPassword: "default-admin-password"
+  configMap: ""
+  deployModel: ""
+  nodeSelector: ""

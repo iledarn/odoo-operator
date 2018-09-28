@@ -38,14 +38,24 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 		Name:  getFullName(cr, trackSpec, tierSpec),
 		Image: getImageName(&trackSpec.Image),
 		Args:  args,
+		Lifecycle: &v1.Lifecycle{
+			PostStart: &v1.Handler{
+				Exec: &v1.ExecAction{
+					// TODO: until proper fix of https://github.com/kubernetes/kubernetes/issues/2630
+					Command: []string{"sh", "-c", "mkdir /run/secrets/patched && cat " + getSecretFile(appPsqlSecretKey) + " > /run/secrets/patched/" + appPsqlSecretKey + " && chmod 400 /run/secrets/patched/" + appPsqlSecretKey},
+					// Command: []string{"true"},
+				},
+			},
+		},
 		Env: []v1.EnvVar{
 			{
 				Name:  envPGHOST,
 				Value: cr.Spec.PgSpec.PgCluster.Host,
 			},
 			{
-				Name:  envPGPASSFILE,
-				Value: getSecretFile(appPsqlSecretKey),
+				Name: envPGPASSFILE,
+				// TODO: until proper fix of https://github.com/kubernetes/kubernetes/issues/2630
+				Value: "/run/secrets/patched/" + appPsqlSecretKey,
 			},
 			{
 				Name:  envODOORC,

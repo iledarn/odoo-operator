@@ -51,8 +51,8 @@ const (
 	// SMTP Server Config
 	odooSMTPMail     = ""
 	odooSMTPServer   = ""
-	odooSMTPPort     = ""
-	odooSMTPSsl      = ""
+	odooSMTPPort     = "465"
+	odooSMTPSsl      = "true"
 	odooSMTPUser     = ""
 	odooSMTPPassword = ""
 )

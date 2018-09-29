@@ -130,10 +130,10 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 		for _, s := range c.Spec.Volumes {
 			vol := v1.Volume{
 				// kubernetes.io/pvc-protection
-				Name: getVolumeName(c, s.Name),
+				Name: getVolumeNameFromConstant(c, s.Name),
 				VolumeSource: v1.VolumeSource{
 					PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
-						ClaimName: getVolumeName(c, s.Name),
+						ClaimName: getVolumeNameFromConstant(c, s.Name),
 						ReadOnly:  false,
 					},
 				},
@@ -148,9 +148,10 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 		}
 
 		securityContext := &v1.PodSecurityContext{
-			RunAsUser:    func(i int64) *int64 { return &i }(9001),
-			RunAsNonRoot: func(b bool) *bool { return &b }(true),
-			FSGroup:      func(i int64) *int64 { return &i }(9001),
+			RunAsUser:          func(i int64) *int64 { return &i }(9001),
+			RunAsNonRoot:       func(b bool) *bool { return &b }(true),
+			FSGroup:            func(i int64) *int64 { return &i }(9001),
+			SupplementalGroups: []int64{2000}, // Host volume group, with 770 access.
 		}
 
 		if !reflect.DeepEqual(o.Spec.Template.Spec.SecurityContext, securityContext) {
@@ -266,7 +267,7 @@ func newAdminSecretWithParams(data string, pwd *string) []byte {
 func newConfigWithDefaultParams(data string) string {
 	buf := bytes.NewBufferString(data)
 	basicSection := fmt.Sprintf(odooBasicFmt,
-		getMountPath(appPersistenceKey),
+		getMountPathFromConstant(api.PVCNameData),
 		odooWithoutDemo,
 		odooServerWideModules,
 		odooDbName,
@@ -274,7 +275,7 @@ func newConfigWithDefaultParams(data string) string {
 		odooListDb,
 		odooDbFilter,
 		odooPublisherWarrantyURL,
-		getMountPath(appBackupKey),
+		getMountPathFromConstant(api.PVCNameBackup),
 		odooIntegratorWarrantyURL)
 	buf.WriteString(basicSection)
 

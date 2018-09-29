@@ -29,8 +29,8 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 
 	for _, s := range cr.Spec.Volumes {
 		volumes = append(volumes, v1.VolumeMount{
-			Name:      getVolumeName(cr, s.Name),
-			MountPath: filepath.Dir(getMountPath(s.Name)),
+			Name:      getVolumeNameFromConstant(cr, s.Name),
+			MountPath: filepath.Dir(getMountPathFromConstant(s.Name)),
 		})
 	}
 

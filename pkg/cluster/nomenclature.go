@@ -53,8 +53,16 @@ func getVolumeName(cr *api.OdooCluster, s string) string {
 	return cr.GetName() + strings.ToLower(s)
 }
 
+func getVolumeNameFromConstant(cr *api.OdooCluster, s api.VolumeName) string {
+	return getVolumeName(cr, fmt.Sprintf("%s", s))
+}
+
 func getMountPath(key string) string {
 	return appMountPath + strings.ToLower(key) + "/"
+}
+
+func getMountPathFromConstant(key api.VolumeName) string {
+	return getMountPath(fmt.Sprintf("%s", key))
 }
 
 func getSecretFile(key string) string {

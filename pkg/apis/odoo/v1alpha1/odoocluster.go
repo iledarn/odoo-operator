@@ -109,13 +109,15 @@ type TierSpec struct {
 	Resources *v1.ResourceRequirements `json:"resources,omitempty"`
 }
 type Volume struct {
-	Name string                       `json:"name"`
+	Name VolumeName                   `json:"name"`
 	Spec v1.PersistentVolumeClaimSpec `json:"spec"`
 }
 
+type VolumeName string
+
 const (
-	PVCNamePersistence = "Persistence"
-	PVCNameBackup      = "Backup"
+	PVCNameData   VolumeName = "Data"
+	PVCNameBackup VolumeName = "Backup"
 )
 
 type Tier string

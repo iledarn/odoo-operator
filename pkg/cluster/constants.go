@@ -31,8 +31,6 @@ const (
 	appCustomConfigKey  = "override"
 	appPsqlSecretKey    = "pgpass"
 	appAdminSecretKey   = "adminpwd"
-	appPersistenceKey   = "persist"
-	appBackupKey        = "backups"
 
 	// Basic Config
 	odooWithoutDemo           = "True"

@@ -86,7 +86,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 						"--connect-timeout", "5",
 						"--max-time", "10",
 						"-k", "-s",
-						fmt.Sprintf("https://localhost:%d/web", clientPort),
+						fmt.Sprintf("http://localhost:%d", clientPort),
 					},
 				},
 			},
@@ -99,9 +99,8 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 		c.ReadinessProbe = &v1.Probe{
 			Handler: v1.Handler{
 				HTTPGet: &v1.HTTPGetAction{
-					Path:   "/web",
 					Port:   intstr.FromInt(clientPort),
-					Scheme: v1.URISchemeHTTPS,
+					Scheme: v1.URISchemeHTTP,
 				},
 			},
 			InitialDelaySeconds: 10,
@@ -119,7 +118,7 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 						"--connect-timeout", "5",
 						"--max-time", "10",
 						"-k", "-s",
-						fmt.Sprintf("https://localhost:%d/web", longpollingPort),
+						fmt.Sprintf("http://localhost:%d", longpollingPort),
 					},
 				},
 			},
@@ -132,9 +131,8 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 		c.ReadinessProbe = &v1.Probe{
 			Handler: v1.Handler{
 				HTTPGet: &v1.HTTPGetAction{
-					Path:   "/web",
 					Port:   intstr.FromInt(longpollingPort),
-					Scheme: v1.URISchemeHTTPS,
+					Scheme: v1.URISchemeHTTP,
 				},
 			},
 			InitialDelaySeconds: 10,

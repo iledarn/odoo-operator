@@ -162,6 +162,17 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 		tierSpec := c.Spec.Tiers[i[1]]
 		newContainers := []v1.Container{odooContainer(c, &trackSpec, &tierSpec)}
 
+		imagePullSecrets := []v1.LocalObjectReference{
+			{
+				Name: trackSpec.Image.Secret,
+			},
+		}
+
+		if !reflect.DeepEqual(o.Spec.Template.Spec.ImagePullSecrets, imagePullSecrets) {
+			changed = true
+			o.Spec.Template.Spec.ImagePullSecrets = imagePullSecrets
+		}
+
 		if !reflect.DeepEqual(o.Spec.Template.Spec.Containers, newContainers) {
 			// logrus.Errorf("OldContainers %+v", o.Spec.Template.Spec.Containers)
 			// logrus.Errorf("NewContainers %+v", newContainers)

@@ -9,6 +9,7 @@ type ImageSpec struct {
 	Registry string `json:"registry"`
 	Image    string `json:"image"`
 	Tag      string `json:"tag"`
+	Secret   string `json:"secret,omitempty"`
 }
 
 type StatusCondition struct {

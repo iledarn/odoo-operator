@@ -7,6 +7,9 @@ spec:
   tracks:
     - name: "v10"
       image:
+        # Create registry credentials
+        # See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-secret-in-the-cluster-that-holds-your-authorization-token
+        secret: registry-credentials  # Optional
         registry: "docker.io"
         image: "xoelabs/dockery-odoo"
         tag: "v10"

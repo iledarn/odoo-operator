@@ -216,6 +216,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 
 		switch tierSpec.Name {
 		case api.ServerTier:
+			selector["tier"] = fmt.Sprintf("%s", api.ServerTier)
 			svcPorts = []v1.ServicePort{{
 				Name:       clientPortName,
 				Protocol:   v1.ProtocolTCP,
@@ -223,6 +224,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 				TargetPort: intstr.FromString(clientPortName),
 			}}
 		case api.LongpollingTier:
+			selector["tier"] = fmt.Sprintf("%s", api.LongpollingTier)
 			svcPorts = []v1.ServicePort{{
 				Name:       longpollingPortName,
 				Protocol:   v1.ProtocolTCP,

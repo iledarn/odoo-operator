@@ -125,7 +125,6 @@ type Tier string
 const (
 	ServerTier      Tier = "Server"
 	CronTier        Tier = "Cron"
-	BackgroundTier  Tier = "Background"
 	LongpollingTier Tier = "LongPolling"
 )
 

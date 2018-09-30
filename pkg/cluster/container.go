@@ -153,9 +153,6 @@ func getContainerArgs(tierSpec *api.TierSpec) []string {
 	case api.CronTier:
 		return []string{"--config", appConfigsPath}
 		// return []string{"--config", appConfigsPath, "--tier", api.CronTier}
-	case api.BackgroundTier:
-		return []string{"--config", appConfigsPath}
-		// return []string{"--config", appConfigsPath, "--tier", api.BackgroundTier}
 	case api.LongpollingTier:
 		return []string{"--config", appConfigsPath}
 		// return []string{"--config", appConfigsPath, "--tier", api.LongpollingTier}
@@ -172,8 +169,6 @@ func getContainerPorts(tierSpec *api.TierSpec) []v1.ContainerPort {
 			Protocol:      v1.ProtocolTCP,
 		}}
 	case api.CronTier:
-		return []v1.ContainerPort{}
-	case api.BackgroundTier:
 		return []v1.ContainerPort{}
 	case api.LongpollingTier:
 		return []v1.ContainerPort{{

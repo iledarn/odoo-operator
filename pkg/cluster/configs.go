@@ -68,18 +68,19 @@ log_handler = %s
 
 const odooMultiprocFmt = `
 [options]
-
+; We don't use Odoo's multiprocessing in k8s deployments
+; This is handed off to the microservice infrastructure
 ;; ========== MULTI PROCESSING ======
-max_cron_threads = 1
-workers = 8
+; max_cron_threads = 2
+; workers = 0
 ; limit_memory_soft = 2048 * 1024 * 1024
 ; limit_memory_hard = 2560 * 1024 * 1024
-limit_time_cpu = 3600
-limit_time_real = 240
-limit_time_real_cron = 360
+; limit_time_cpu = 3600
+; limit_time_real = 240
+; limit_time_real_cron = 360
 ; limit_request = 8192
 
-db_maxconn = 14
+; db_maxconn = 64
 
 ;; ==================================
 ;; ==================================

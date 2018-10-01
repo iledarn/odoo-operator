@@ -268,6 +268,7 @@ func newAdminSecretWithParams(data string, pwd *string) []byte {
 
 func newConfigWithDefaultParams(data string) string {
 	buf := bytes.NewBufferString(data)
+
 	basicSection := fmt.Sprintf(odooBasicFmt,
 		getMountPathFromConstant(api.PVCNameData),
 		odooWithoutDemo,
@@ -276,9 +277,7 @@ func newConfigWithDefaultParams(data string) string {
 		odooDbTemplate,
 		odooListDb,
 		odooDbFilter,
-		odooPublisherWarrantyURL,
-		getMountPathFromConstant(api.PVCNameBackup),
-		odooIntegratorWarrantyURL)
+		odooPublisherWarrantyURL)
 	buf.WriteString(basicSection)
 
 	loggingSection := fmt.Sprintf(odooLoggingFmt,
@@ -297,6 +296,11 @@ func newConfigWithDefaultParams(data string) string {
 		odooSMTPUser,
 		odooSMTPPassword)
 	buf.WriteString(SMTPSection)
+
+	CustomSection := fmt.Sprintf(
+		getMountPathFromConstant(api.PVCNameBackup),
+		odooIntegratorWarrantyURL)
+	buf.WriteString(CustomSection)
 
 	return buf.String()
 }

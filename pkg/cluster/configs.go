@@ -39,20 +39,9 @@ unaccent = True
 publisher_warranty_url = %s
 ; reportgz = False
 ; shell_interface = [ipython|ptpython|bpython|python]
-
-;; ========== CUSTOM SECTIONS =======
-[backups]
-backupfolder = %s
-
-[integrator]
-integrator_warranty_url = %s
-
-;; ==================================
-;; ==================================
 `
 
 const odooLoggingFmt = `
-[options]
 
 ;; ========== LOGGING SETTING =======
 ; logfile = False
@@ -67,7 +56,6 @@ log_handler = %s
 `
 
 const odooMultiprocFmt = `
-[options]
 ; We don't use Odoo's multiprocessing in k8s deployments
 ; This is handed off to the microservice infrastructure
 ;; ========== MULTI PROCESSING ======
@@ -87,7 +75,6 @@ const odooMultiprocFmt = `
 `
 
 const odooSMTPFmt = `
-[options]
 ;; ==================================
 ;; ========== SMTP SETTING ==========
 email_from = %s
@@ -96,6 +83,19 @@ smtp_port = %s
 smtp_ssl = %s
 smtp_user = %s
 smtp_password = %s
+`
+
+const odooCustomSection = `
+
+;; ========== CUSTOM SECTIONS =======
+[backups]
+backupfolder = %s
+
+[integrator]
+integrator_warranty_url = %s
+
+;; ==================================
+;; ==================================
 `
 
 const odooPsqlSecretFmt = `

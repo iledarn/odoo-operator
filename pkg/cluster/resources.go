@@ -92,7 +92,7 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 
 		secPsqlBuf := newPsqlSecretWithParams(secPsql, &c.Spec.PgSpec)
 		newSpec := map[string][]byte{appPsqlSecretKey: secPsqlBuf}
-		secAdminBuf := newAdminSecretWithParams(secAdmin, &c.Spec.AdminPassword)
+		secAdminBuf := newAdminSecretWithParams(secAdmin, c.Spec.AdminPassword)
 		newSpec[appAdminSecretKey] = secAdminBuf
 		if !reflect.DeepEqual(o.Data, newSpec) {
 			changed = true
@@ -259,9 +259,9 @@ func newPsqlSecretWithParams(data string, p *api.PgNamespaceSpec) []byte {
 	return []byte(buf.Bytes())
 }
 
-func newAdminSecretWithParams(data string, pwd *string) []byte {
+func newAdminSecretWithParams(data string, pwd string) []byte {
 	buf := bytes.NewBufferString(data)
-	secret := fmt.Sprintf(odooAdminSecretFmt, &pwd)
+	secret := fmt.Sprintf(odooAdminSecretFmt, pwd)
 	buf.WriteString(secret)
 	return []byte(buf.Bytes())
 }

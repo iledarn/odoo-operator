@@ -277,25 +277,15 @@ func newConfigWithDefaultParams(data string) string {
 		odooDbTemplate,
 		odooListDb,
 		odooDbFilter,
-		odooPublisherWarrantyURL)
-	buf.WriteString(basicSection)
-
-	loggingSection := fmt.Sprintf(odooLoggingFmt,
-		odooLogLevel)
-	buf.WriteString(loggingSection)
-
-	// multiprocSection := fmt.Sprintf(odooMultiprocFmt,
-	// 	"")
-	buf.WriteString(odooMultiprocFmt)
-
-	SMTPSection := fmt.Sprintf(odooSMTPFmt,
+		odooPublisherWarrantyURL,
+		odooLogLevel,
 		odooSMTPMail,
 		odooSMTPServer,
 		odooSMTPPort,
 		odooSMTPSsl,
 		odooSMTPUser,
 		odooSMTPPassword)
-	buf.WriteString(SMTPSection)
+	buf.WriteString(basicSection)
 
 	CustomSection := fmt.Sprintf(
 		getMountPathFromConstant(api.PVCNameBackup),

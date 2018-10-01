@@ -82,7 +82,7 @@ type OdooClusterSpec struct {
 	PgSpec            PgNamespaceSpec       `json:"pgNsSpec"`
 	ResourceQuotaSpec *v1.ResourceQuotaSpec `json:"resourceQuotaSpec,omitempty"`
 	AdminPassword     string                `json:"adminPassword"`
-	ConfigMap         string                `json:"configMap"`
+	ConfigMap         string                `json:"config"`
 	DeployModel       OdooClusterMode       `json:"deployModel,omitempty"`
 	NodeSelector      *string               `json:"nodeSelector,omitempy"`
 

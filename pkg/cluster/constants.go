@@ -36,7 +36,7 @@ const (
 	odooWithoutDemo           = "True"
 	odooServerWideModules     = "web,web_kanban,backup_all"
 	odooDbName                = "False"
-	odooDbTemplate            = "template1"
+	odooDbTemplate            = "template0"
 	odooListDb                = "False"
 	odooDbFilter              = "^%h$"
 	odooPublisherWarrantyURL  = "http://services.openerp.com/publisher-warranty/"

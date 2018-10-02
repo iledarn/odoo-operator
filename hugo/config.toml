@@ -7,11 +7,11 @@ theme = "elate"
 
   # custom_css = ["css/custom1.css", "css/custom2.css"]
 
-  [params.sidebar]
-  avatar="Odoo-Operator-color.png"
-
   # Meta
   description = "Run Odoo reliably at scale."
+
+  [params.sidebar]
+  avatar="Odoo-Operator-color.png"
   # Navigation
   [params.navigation]
     brand = "Odoo-Operator"

@@ -28,19 +28,21 @@ const (
 
 	// ConfigMaps, Secrets & Volumes Keys
 	appDefaultConfigKey = "default"
-	appCustomConfigKey  = "override"
+	appCustomConfigKey  = "custom"
 	appPsqlSecretKey    = "pgpass"
 	appAdminSecretKey   = "adminpwd"
 
 	// Basic Config
-	odooWithoutDemo           = "True"
-	odooServerWideModules     = "web,web_kanban,backup_all"
-	odooDbName                = "False"
-	odooDbTemplate            = "template0"
-	odooListDb                = "False"
-	odooDbFilter              = "^%h$"
-	odooPublisherWarrantyURL  = "http://services.openerp.com/publisher-warranty/"
-	odooIntegratorWarrantyURL = "https://erp.xoe.solutions/integrator-warranty/"
+	odooServerTierMaxConn      = "16"
+	odooLongpollingTierMaxConn = "16"
+	odooWithoutDemo            = "True"
+	odooServerWideModules      = "base,web"
+	odooDbName                 = "False"
+	odooDbTemplate             = "template0"
+	odooListDb                 = "False"
+	odooDbFilter               = "^%h$"
+	odooPublisherWarrantyURL   = "http://services.openerp.com/publisher-warranty/"
+	odooIntegratorWarrantyURL  = "https://erp.xoe.solutions/integrator-warranty/"
 
 	// Log Config
 	odooLogLevel = ":INFO"

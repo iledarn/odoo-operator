@@ -1,18 +1,97 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: odoo
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    # If using cert-manager, add an annotation indicating the issuer to use.
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    field.cattle.io/publicEndpoints: '[{"addresses":["140.82.30.224"],"port":80,"protocol":"HTTP","serviceName":"odoo:mausi-v10-server","ingressName":"odoo:odoo-ingress","hostname":"testcluster.xoe.cloud","allNodes":true}]'
+  name: odoo-ingress
+  namespace: odoo
+spec:
+  rules:
+  - host: testcluster.example.com
+    http:
+      paths:
+      - path:
+        backend:
+          serviceName: mausi-v10-server
+          servicePort: 8069
+      - path: /longpolling
+        backend:
+          serviceName: mausi-v10-longpolling
+          servicePort: 8072
+  tls: # < placing a host in the TLS config will indicate a cert should be created
+  - hosts:
+    - "*.example.com"
+    secretName: odoo-ingress-cert # < cert-manager will store the created certificate in this secret.
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: odoo-pv0001
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  hostPath:
+    path: /mnt/volumes/odoo-pv0001
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: odoo-pv0002
+spec:
+  capacity:
+    storage: 4Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  hostPath:
+    path: /mnt/volumes/odoo-pv0002
+    type: DirectoryOrCreate
+---
+#### ACTUAL CLUSTER DEFINITION BEGINS HERE ####
 apiVersion: "odoo.k8s.io/v1alpha1"
 kind: "OdooCluster"
 metadata:
   name: "mausi"
   namespace: "odoo"
 spec:
+  # config:
+  #   db:
+  #     name: false
+  #     template: template0
+  #     list: true
+  #     filter: "^%h$"
+  #   smtp:
+  #     email_from: ""
+  #     server: ""
+  #     port: "465"
+  #     ssl: "true"
+  #     user: ""
+  #     password: ""
   tracks:
     - name: "v10"
       image:
         # Create registry credentials
         # See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-secret-in-the-cluster-that-holds-your-authorization-token
-        secret: registry-credentials  # Optional
-        registry: "docker.io"
-        image: "xoelabs/dockery-odoo"
-        tag: "v10"
+        secret: regcred  # Optional
+        registry: "registry.gitlab.com"
+        image: "xoe/odoo/odoo-xoe"
+        tag: "master"
+      # config:
+      #   serverWideModules: base,web
+      #   logLevel: ":INFO"
     # - name: "v11"
     #   image:
     #     registry: "docker.io"
@@ -25,8 +104,6 @@ spec:
       # resources:
     - name: "Cron"
       replicas: 1
-    - name: "Background"
-      replicas: 1
     - name: "LongPolling"
       replicas: 1
   volumes:
@@ -35,7 +112,7 @@ spec:
         accessModes:
           - ReadWriteOnce
         resources:
-          requests: 
+          requests:
             storage: 5Gi
       # storageClassName:
     - name: "Backup"
@@ -43,13 +120,14 @@ spec:
         accessModes:
           - ReadWriteOnce
         resources:
-          requests: 
+          requests:
             storage: 3Gi
       # storageClassName:
+
   pgNsSpec:
-    user: "odoo"
-    password: "odoo"
-    # userQuota: 
+    user: "odoo-psql-staging"
+    password: "odoo-psql-staging"
+    # userQuota:
     pgCluster:
       # Previous deployment of an external service is recommended
       host: "database"
@@ -58,6 +136,5 @@ spec:
       password: "postgres"
   # resourceQuotaSpec:
   adminPassword: "default-admin-password"
-  configMap: ""
   deployModel: ""
   nodeSelector: ""

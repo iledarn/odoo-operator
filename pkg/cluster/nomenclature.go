@@ -19,8 +19,28 @@ func getFullName(oc *api.OdooCluster, tr *api.TrackSpec, t *api.TierSpec) string
 	return fmt.Sprintf("%s-%s-%s", oc.GetName(), tr.Name, strings.ToLower(string(t.Name)))
 }
 
+func getTrackScopeName(oc *api.OdooCluster, tr *api.TrackSpec) string {
+	return fmt.Sprintf("%s-%s-alltiers", oc.GetName(), tr.Name)
+}
+
+func getTierScopeName(oc *api.OdooCluster, t *api.TierSpec) string {
+	return fmt.Sprintf("%s-alltracks-%s", oc.GetName(), strings.ToLower(string(t.Name)))
+}
+
 func labelsWithTrackAndTier(selector map[string]string, tr *api.TrackSpec, t *api.TierSpec) map[string]string {
-	labels := map[string]string{"track": tr.Name, "tier": string(t.Name)}
+	labels := labelsWithTrack(selector, tr)
+	return labelsWithTier(labels, t)
+}
+func labelsWithTrack(selector map[string]string, tr *api.TrackSpec) map[string]string {
+	labels := map[string]string{"track": tr.Name}
+	for k, v := range selector {
+		labels[k] = v
+	}
+	return labels
+}
+
+func labelsWithTier(selector map[string]string, t *api.TierSpec) map[string]string {
+	labels := map[string]string{"tier": string(t.Name)}
 	for k, v := range selector {
 		labels[k] = v
 	}

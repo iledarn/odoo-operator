@@ -487,7 +487,9 @@ func (in *OdooClusterSpec) DeepCopyInto(out *OdooClusterSpec) {
 	if in.Tracks != nil {
 		in, out := &in.Tracks, &out.Tracks
 		*out = make([]TrackSpec, len(*in))
-		copy(*out, *in)
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	if in.Tiers != nil {
 		in, out := &in.Tiers, &out.Tiers
@@ -513,13 +515,40 @@ func (in *OdooClusterSpec) DeepCopyInto(out *OdooClusterSpec) {
 			(*in).DeepCopyInto(*out)
 		}
 	}
-	if in.NodeSelector != nil {
-		in, out := &in.NodeSelector, &out.NodeSelector
+	if in.Config != nil {
+		in, out := &in.Config, &out.Config
 		if *in == nil {
 			*out = nil
 		} else {
 			*out = new(string)
 			**out = **in
+		}
+	}
+	if in.IntegratorConfig != nil {
+		in, out := &in.IntegratorConfig, &out.IntegratorConfig
+		if *in == nil {
+			*out = nil
+		} else {
+			*out = new(string)
+			**out = **in
+		}
+	}
+	if in.CustomConfig != nil {
+		in, out := &in.CustomConfig, &out.CustomConfig
+		if *in == nil {
+			*out = nil
+		} else {
+			*out = new(string)
+			**out = **in
+		}
+	}
+	if in.NodeSelector != nil {
+		in, out := &in.NodeSelector, &out.NodeSelector
+		if *in == nil {
+			*out = nil
+		} else {
+			*out = new(v1.NodeSelector)
+			(*in).DeepCopyInto(*out)
 		}
 	}
 	return
@@ -891,6 +920,33 @@ func (in *TierSpec) DeepCopy() *TierSpec {
 func (in *TrackSpec) DeepCopyInto(out *TrackSpec) {
 	*out = *in
 	out.Image = in.Image
+	if in.Config != nil {
+		in, out := &in.Config, &out.Config
+		if *in == nil {
+			*out = nil
+		} else {
+			*out = new(string)
+			**out = **in
+		}
+	}
+	if in.IntegratorConfig != nil {
+		in, out := &in.IntegratorConfig, &out.IntegratorConfig
+		if *in == nil {
+			*out = nil
+		} else {
+			*out = new(string)
+			**out = **in
+		}
+	}
+	if in.CustomConfig != nil {
+		in, out := &in.CustomConfig, &out.CustomConfig
+		if *in == nil {
+			*out = nil
+		} else {
+			*out = new(string)
+			**out = **in
+		}
+	}
 	return
 }
 

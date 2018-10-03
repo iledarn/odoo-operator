@@ -153,12 +153,20 @@ func Reconcile(c *api.OdooCluster) (err error) {
 
 	}
 
-	// Reconcile the ConfigMap for the cluster
-	cm := &v1.ConfigMap{TypeMeta: cmMetaType, ObjectMeta: objectMeta}
-	logrus.Debugf("Reconciler (ConfigMap-Obj) ----- %+v", cm)
-	if err := reconcileResource(cm, c, builder, syncer); err != nil {
-		logrus.Errorf("Failed to reconcile %s (%s/%s): %v", cm.Kind, c.Namespace, cm.GetName(), err)
-		return err
+	// Reconcile the ConfigMaps for the cluster per Tier
+	for j, trs := range c.Spec.Tracks {
+		selector := selectorForOdooCluster(c.GetName())
+		objectMetaConfigMap := metav1.ObjectMeta{
+			Name:      getTrackScopeName(c, &trs),
+			Namespace: c.GetNamespace(),
+			Labels:    labelsWithTrack(selector, &trs),
+		}
+		cm := &v1.ConfigMap{TypeMeta: cmMetaType, ObjectMeta: objectMetaConfigMap}
+		logrus.Debugf("Reconciler (ConfigMap-Obj) ----- %+v", cm)
+		if err := reconcileResource(cm, c, builder, syncer, j); err != nil {
+			logrus.Errorf("Failed to reconcile %s (%s/%s): %v", cm.Kind, c.Namespace, cm.GetName(), err)
+			return err
+		}
 	}
 
 	// Reconcile the Secret for the cluster

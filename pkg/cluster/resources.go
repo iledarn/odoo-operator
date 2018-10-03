@@ -70,14 +70,20 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 		return changed, nil
 
 	case *v1.ConfigMap:
-		var cfgDefaultData string
-		var cfgCustomData string
 
-		cfgDefaultData = newConfigWithDefaultParams(cfgDefaultData)
-		newSpec := map[string]string{appDefaultConfigKey: cfgDefaultData}
-		if len(c.Spec.ConfigMap) != 0 {
-			cfgCustomData = c.Spec.ConfigMap
-			newSpec[appCustomConfigKey] = cfgCustomData
+		trackConfig := c.Spec.Tracks[i[0]].Config
+		trackIntegratorConfig := c.Spec.Tracks[i[0]].IntegratorConfig
+		trackCustomConfig := c.Spec.Tracks[i[0]].CustomConfig
+
+		cfgDefaultData := newDefaultConfig()
+		cfgOptionsData := newOptionsConfig(c.Spec.Config, trackConfig)
+		cfgIntegratorData := newIntegratorConfig(c.Spec.IntegratorConfig, trackIntegratorConfig)
+		cfgCustomData := newCustomConfig(c.Spec.CustomConfig, trackCustomConfig)
+		newSpec := map[string]string{
+			appDefaultConfigKey:    cfgDefaultData,
+			appOptionsConfigKey:    cfgOptionsData,
+			appIntegratorConfigKey: cfgIntegratorData,
+			appCustomConfigKey:     cfgCustomData,
 		}
 		if !reflect.DeepEqual(o.Data, newSpec) {
 			changed = true
@@ -102,14 +108,17 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 		return changed, nil
 
 	case *appsv1.Deployment:
+		// Track and Tier scope of this deployment
+		trackSpec := c.Spec.Tracks[i[0]]
+		tierSpec := c.Spec.Tiers[i[1]]
+
 		volumes := []v1.Volume{
 			{
 				Name: getVolumeName(c, configVolName),
 				VolumeSource: v1.VolumeSource{
 					ConfigMap: &v1.ConfigMapVolumeSource{
 						LocalObjectReference: v1.LocalObjectReference{
-							// We don't use suffixes on sinlgeton resources
-							Name: c.GetName(),
+							Name: getTrackScopeName(c, &trackSpec),
 						},
 						DefaultMode: func(a int32) *int32 { return &a }(272), // octal 0420
 					},
@@ -159,8 +168,6 @@ func syncer(into runtime.Object, c *api.OdooCluster, i ...int) (bool, error) {
 			o.Spec.Template.Spec.SecurityContext = securityContext
 		}
 
-		trackSpec := c.Spec.Tracks[i[0]]
-		tierSpec := c.Spec.Tiers[i[1]]
 		newContainers := []v1.Container{odooContainer(c, &trackSpec, &tierSpec)}
 
 		imagePullSecrets := []v1.LocalObjectReference{
@@ -266,31 +273,95 @@ func newAdminSecretWithParams(data string, pwd string) []byte {
 	return []byte(buf.Bytes())
 }
 
-func newConfigWithDefaultParams(data string) string {
-	buf := bytes.NewBufferString(data)
+func newDefaultConfig() string {
+	var s string
+	buf := bytes.NewBufferString(s)
+	section := fmt.Sprintf(odooDefaultSection,
+		defaultWithoutDemo,
+		defaultServerWideModules,
+		defaultDbName,
+		defaultDbTemplate,
+		defaultListDb,
+		defaultDbFilter,
+		defaultPublisherWarrantyURL,
+		defaultLogLevel)
+	buf.WriteString(section)
+	return buf.String()
+}
 
-	basicSection := fmt.Sprintf(odooBasicFmt,
+func newOptionsConfig(clusterOverrides *string, trackOverrides *string) string {
+	var s string
+	buf := bytes.NewBufferString(s)
+
+	var cO string
+	var tO string
+
+	if clusterOverrides != nil {
+		cO = *clusterOverrides
+	} else {
+		cO = ""
+	}
+
+	if trackOverrides != nil {
+		tO = *trackOverrides
+	} else {
+		tO = ""
+	}
+
+	section := fmt.Sprintf(odooOptionsSection,
 		getMountPathFromConstant(api.PVCNameData),
-		odooWithoutDemo,
-		odooServerWideModules,
-		odooDbName,
-		odooDbTemplate,
-		odooListDb,
-		odooDbFilter,
-		odooPublisherWarrantyURL,
-		odooLogLevel,
-		odooSMTPMail,
-		odooSMTPServer,
-		odooSMTPPort,
-		odooSMTPSsl,
-		odooSMTPUser,
-		odooSMTPPassword)
-	buf.WriteString(basicSection)
-
-	CustomSection := fmt.Sprintf(
 		getMountPathFromConstant(api.PVCNameBackup),
-		odooIntegratorWarrantyURL)
-	buf.WriteString(CustomSection)
+		cO, tO)
+	buf.WriteString(section)
+	return buf.String()
+}
 
+func newIntegratorConfig(clusterOverrides *string, trackOverrides *string) string {
+	var s string
+	buf := bytes.NewBufferString(s)
+
+	var cO string
+	var tO string
+
+	if clusterOverrides != nil {
+		cO = *clusterOverrides
+	} else {
+		cO = ""
+	}
+
+	if trackOverrides != nil {
+		tO = *trackOverrides
+	} else {
+		tO = ""
+	}
+
+	section := fmt.Sprintf(odooIntegratorSection,
+		cO, tO)
+	buf.WriteString(section)
+	return buf.String()
+}
+
+func newCustomConfig(clusterOverrides *string, trackOverrides *string) string {
+	var s string
+	buf := bytes.NewBufferString(s)
+
+	var cO string
+	var tO string
+
+	if clusterOverrides != nil {
+		cO = *clusterOverrides
+	} else {
+		cO = ""
+	}
+
+	if trackOverrides != nil {
+		tO = *trackOverrides
+	} else {
+		tO = ""
+	}
+
+	section := fmt.Sprintf(odooCustomSection,
+		cO, tO)
+	buf.WriteString(section)
 	return buf.String()
 }

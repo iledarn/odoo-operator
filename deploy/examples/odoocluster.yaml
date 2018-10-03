@@ -67,19 +67,22 @@ metadata:
   name: "mausi"
   namespace: "odoo"
 spec:
-  # config:
-  #   db:
-  #     name: false
-  #     template: template0
-  #     list: true
-  #     filter: "^%h$"
-  #   smtp:
-  #     email_from: ""
-  #     server: ""
-  #     port: "465"
-  #     ssl: "true"
-  #     user: ""
-  #     password: ""
+  # config: |  # < those will be mapped to the [options] section (cluster-scoped)
+  #   db_name = false
+  #   db_template = template0
+  #   list_db = false
+  #   dbfilter = "^%h$"
+  #   email_from: ""
+  #   smtp_server: ""
+  #   smtp_port: "465"
+  #   smtp_ssl: "true"
+  #   smtp_user: ""
+  #   smtp_password: ""
+  integratorConfig: |  # < if you use the [integrator] section (cluster-scoped)
+    integrator_warranty_url = "https://erp.xoe.solutions/integrator-warranty/"
+  # customConfig: |  # < if you use any custom sections (cluster-scoped)
+  #   [mysection]
+  #   my-key=my-value
   tracks:
     - name: "v10"
       image:
@@ -89,9 +92,15 @@ spec:
         registry: "registry.gitlab.com"
         image: "xoe/odoo/odoo-xoe"
         tag: "master"
-      # config:
-      #   serverWideModules: base,web
-      #   logLevel: ":INFO"
+      config: |  # < those will be mapped to the [options] section (track-scoped)
+        log_handler = ":WARNING"
+        server_wide_modules = web_kanban,web
+      # integratorConfig: |  # < if you use the [integrator] section (track-scoped)
+      #   integrator_warranty_url = "https://erp.xoe.solutions/integrator-warranty/"
+      # customConfig: |  # < if you use any custom sections (track-scoped)
+      #   [mysection]
+      #   my-key=my-value
+
     # - name: "v11"
     #   image:
     #     registry: "docker.io"
@@ -100,13 +109,13 @@ spec:
   tiers:
     - name: "Server"
       replicas: 1
-      # dbConn:
+      # dbConn:  # < Adjust according to expected concurrent workload for normal use, default: 16
       # qos:
       # resources:
     - name: "Cron"
       replicas: 1
     - name: "LongPolling"
-      # dbConn:
+      # dbConn:  # < Adjust according to expected concurrent workload for chat use, default: 16
       replicas: 1
   volumes:
     - name: "Data"
@@ -136,7 +145,9 @@ spec:
       port: "5432"
       user: "postgres"
       password: "postgres"
-  # resourceQuotaSpec:
+
   adminPassword: "default-admin-password"
-  deployModel: ""
-  nodeSelector: ""
+
+  # resourceQuotaSpec:
+
+  # nodeSelector:

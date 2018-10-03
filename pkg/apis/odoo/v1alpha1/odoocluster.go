@@ -12,7 +12,6 @@ const (
 	defaultImage         = "xoe-labs/odoo"
 	defaultTag           = "latest"
 	defaultAdminPassword = "admin-password"
-	defaultClusterMode   = OdooClusterModeRemote
 )
 
 var defultImage = ImageSpec{
@@ -67,24 +66,25 @@ func (c *OdooCluster) SetDefaults() bool {
 		logrus.Infof("Applying default for AdminPassword (%v)", cs.AdminPassword)
 		changed = true
 	}
-	if cs.DeployModel == "" {
-		cs.DeployModel = OdooClusterModeRemote
-		logrus.Infof("Applying default for DeployModel (%v)", cs.DeployModel)
-		changed = true
-	}
 	return changed
 }
 
 type OdooClusterSpec struct {
-	Tracks            []TrackSpec           `json:"tracks"`
-	Tiers             []TierSpec            `json:"tiers"`
-	Volumes           []Volume              `json:"volumes,omitempty"`
-	PgSpec            PgNamespaceSpec       `json:"pgNsSpec"`
+	Tracks        []TrackSpec     `json:"tracks"`
+	Tiers         []TierSpec      `json:"tiers"`
+	Volumes       []Volume        `json:"volumes,omitempty"`
+	PgSpec        PgNamespaceSpec `json:"pgNsSpec"`
+	AdminPassword string          `json:"adminPassword"`
+	// +optional
 	ResourceQuotaSpec *v1.ResourceQuotaSpec `json:"resourceQuotaSpec,omitempty"`
-	AdminPassword     string                `json:"adminPassword"`
-	ConfigMap         string                `json:"config"`
-	DeployModel       OdooClusterMode       `json:"deployModel,omitempty"`
-	NodeSelector      *string               `json:"nodeSelector,omitempy"`
+	// +optional
+	Config *string `json:"config,omitempty"`
+	// +optional
+	IntegratorConfig *string `json:"integratorConfig,omitempty"`
+	// +optional
+	CustomConfig *string `json:"customConfig,omitempty"`
+	// +optional
+	NodeSelector *v1.NodeSelector `json:"nodeSelector,omitempy"`
 
 	// MailServer  bool `json:"mailServer"`
 	// OnlyOffice  bool `json:"onlyOffice"`
@@ -97,6 +97,12 @@ type OdooClusterSpec struct {
 type TrackSpec struct {
 	Name  string    `json:"name"`
 	Image ImageSpec `json:"image"`
+	// +optional
+	Config *string `json:"config,omitempty"`
+	// +optional
+	IntegratorConfig *string `json:"integratorConfig,omitempty"`
+	// +optional
+	CustomConfig *string `json:"customConfig,omitempty"`
 }
 
 type TierSpec struct {
@@ -128,18 +134,6 @@ const (
 	ServerTier      Tier = "Server"
 	CronTier        Tier = "Cron"
 	LongpollingTier Tier = "LongPolling"
-)
-
-// OdooClusterMode ...
-type OdooClusterMode string
-
-const (
-	// OdooClusterModeRemote ...
-	OdooClusterModeRemote OdooClusterMode = "Remote"
-	// OdooClusterModeLocal ...
-	OdooClusterModeLocal OdooClusterMode = "Local"
-	// OdooClusterModeHybrid ...
-	OdooClusterModeHybrid OdooClusterMode = "Hybrid"
 )
 
 type OdooClusterStatus struct {

@@ -1,14 +1,10 @@
 package cluster
 
-const odooBasicFmt = `
-[options]
-
-data_dir = %s
+const odooDefaultSection = `
+[DEFAULT]
 
 without_demo = %s
 server_wide_modules = %s
-
-proxy_mode = True
 
 db_name = %s
 db_template = %s
@@ -21,21 +17,41 @@ publisher_warranty_url = %s
 
 log_handler = %s
 
-email_from = %s
-smtp_server = %s
-smtp_port = %s
-smtp_ssl = %s
-smtp_user = %s
-smtp_password = %s
+`
+const odooOptionsSection = `
+[options]
+data_dir = %s
+proxy_mode = True
+
+# A static option used by custom in-app backup module
+backupfolder = %s
+
+# Cluster scoped overrides, if defined:
+%s
+
+# Track scoped overrides, if defined:
+%s
+`
+
+const odooIntegratorSection = `
+
+[integrator]
+
+# Cluster scoped overrides, if defined:
+%s
+
+# Track scoped overrides, if defined:
+%s
 
 `
 
 const odooCustomSection = `
-[backups]
-backupfolder = %s
 
-[integrator]
-integrator_warranty_url = %s
+# Cluster scoped custom sections, if defined:
+%s
+
+# Track scoped custom sections, if defined:
+%s
 
 `
 

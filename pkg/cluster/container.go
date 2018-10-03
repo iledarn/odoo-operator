@@ -148,11 +148,23 @@ func odooContainer(cr *api.OdooCluster, trackSpec *api.TrackSpec, tierSpec *api.
 func getContainerArgs(tierSpec *api.TierSpec) []string {
 	switch tierSpec.Name {
 	case api.ServerTier:
-		return []string{"--config", appConfigsPath, "--db_maxconn=" + odooServerTierMaxConn, "--workers=0", "--max-cron-threads=0"}
+		var maxConn string
+		if tierSpec.DBConn != nil {
+			maxConn = fmt.Sprintf("%s", &tierSpec.DBConn)
+		} else {
+			maxConn = odooServerTierMaxConn
+		}
+		return []string{"--config", appConfigsPath, "--db_maxconn=" + maxConn, "--workers=0", "--max-cron-threads=0"}
 	case api.CronTier:
 		return []string{"--config", appConfigsPath, "--db_maxconn=1", "--workers=0", "--max-cron-threads=1", "--no-xmlrpc"}
 	case api.LongpollingTier:
-		return []string{"gevent", "--config", appConfigsPath, "--db_maxconn=" + odooLongpollingTierMaxConn}
+		var maxConn string
+		if tierSpec.DBConn != nil {
+			maxConn = fmt.Sprintf("%s", &tierSpec.DBConn)
+		} else {
+			maxConn = odooLongpollingTierMaxConn
+		}
+		return []string{"gevent", "--config", appConfigsPath, "--db_maxconn=" + maxConn}
 	}
 	return nil
 }

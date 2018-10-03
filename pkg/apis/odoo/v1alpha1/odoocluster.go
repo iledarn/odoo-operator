@@ -102,6 +102,8 @@ type TrackSpec struct {
 type TierSpec struct {
 	Name Tier `json:"name"`
 	// +optional
+	DBConn *int32 `json:"dbConn,omitempty"`
+	// +optional
 	Replicas int32 `json:"replicas,omitempty"`
 	// +optional
 	QOS *v1.PodQOSClass `json:"qos,omitempty"`

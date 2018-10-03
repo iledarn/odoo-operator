@@ -100,11 +100,13 @@ spec:
   tiers:
     - name: "Server"
       replicas: 1
+      # dbConn:
       # qos:
       # resources:
     - name: "Cron"
       replicas: 1
     - name: "LongPolling"
+      # dbConn:
       replicas: 1
   volumes:
     - name: "Data"

@@ -6,6 +6,7 @@ import (
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
 	"github.com/sirupsen/logrus"
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
+	pg "github.com/xoe-labs/odoo-operator/pkg/pg"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -117,8 +118,6 @@ func Reconcile(c *api.OdooCluster) (err error) {
 		Labels:    selectorForOdooCluster(c.GetName()),
 	}
 
-	// TODO: Spin up PgCluster
-
 	// Reconcile the PgNamespace for the cluster
 	pgns := &api.PgNamespace{TypeMeta: pgNamespaceMetaType, ObjectMeta: objectMeta}
 	logrus.Debugf("Reconciler (PgNamespace-Obj) ----- %+v", pgns)
@@ -128,11 +127,11 @@ func Reconcile(c *api.OdooCluster) (err error) {
 	}
 
 	// Loop through the event stack until PgNamespace is finally ready.
-	ready, err := isPgNamespaceReady(&c.Spec.PgSpec)
+	exists, err := pg.IsPgNamespaceExists(&c.Spec.PgSpec)
 	if err != nil {
 		return fmt.Errorf("failed to check if PgNamespace is ready: %v", err)
 	}
-	if !ready {
+	if !exists {
 		logrus.Infof("Waiting for PgNamespace (%v) to become ready", c.Spec.PgSpec.User)
 		return nil
 	}
@@ -209,7 +208,5 @@ func Reconcile(c *api.OdooCluster) (err error) {
 	}
 	return nil
 }
-
-func isPgNamespaceReady(cr *api.PgNamespaceSpec) (bool, error) { return true, nil }
 
 func ReconcileMigration(cr *api.ClusterMigration) (err error) { return nil }

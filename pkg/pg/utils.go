@@ -1,8 +1,10 @@
 package pg
 
 import (
-	// api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
+	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 
+	"database/sql"
+	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -15,6 +17,19 @@ func labelsForPgNamespace(name string) map[string]string {
 // addOwnerRefToObject appends the desired OwnerReference to the object
 func addOwnerRefToObject(o metav1.Object, r metav1.OwnerReference) {
 	o.SetOwnerReferences(append(o.GetOwnerReferences(), r))
+}
+
+func getDbClusterConnection(cc *api.PgClusterConnection) (*sql.DB, error) {
+
+	dbHost := cc.Host
+	dbPort := cc.Port
+	dbUser := cc.User
+	dbPassword := cc.Password
+
+	dbinfo := fmt.Sprintf("host=%s port=%s user=%s port=%s password=%s dbname=%s sslmode=disable",
+		dbHost, dbPort, dbUser, dbPassword, DBMgtName)
+	db, err := sql.Open("postgres", dbinfo)
+	return db, err
 }
 
 // Not used in thie operator (owner is OdooCluster)

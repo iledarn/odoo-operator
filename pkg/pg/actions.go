@@ -2,43 +2,47 @@
 package pg
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 	api "github.com/xoe-labs/odoo-operator/pkg/apis/odoo/v1alpha1"
 )
 
 func createPgNamespace(cr *api.PgNamespace) (err error) {
-	// If there is not enough quota, creturn with an error
-	enoughSpace, err := isEnoughQuota(cr, 0)
+	// Get Cluster Connection
+	db, err := getDbClusterConnection(&cr.Spec.PgCluster)
 	if err != nil {
+		logrus.Errorf("Failed to establish db connection: %v", err)
 		return err
 	}
-	if !enoughSpace {
-		return errors.New("not enough free quota")
-	}
 	// Create PgNamespace
+	dbNamespaceUser := cr.Spec.User
+	dbNamespacePassword := cr.Spec.Password
+	query := fmt.Sprintf("CREATE ROLE '%s' WITH CREATEDB PASSWORD '%s';", dbNamespaceUser, dbNamespacePassword)
+	_, err2 := db.Exec(query)
+	if err2 != nil {
+		logrus.Errorf("Failed to execute query: %v", err2)
+		return err2
+	}
 	return nil
 }
 
 func updatePgNamespace(cr *api.PgNamespace) (err error) {
-
-	// Get the current quota of the PgNamespace
-	current, err := getPgNamespaceUsedQuota(cr)
+	// Get Cluster Connection
+	db, err := getDbClusterConnection(&cr.Spec.PgCluster)
 	if err != nil {
-		logrus.Errorf("Failed to get PgNamespace's used quota: %v", err)
+		logrus.Errorf("Failed to establish db connection: %v", err)
 		return err
-	}
-	// If there is not enough quota, creturn with an error
-	enoughSpace, err := isEnoughQuota(cr, current)
-	if err != nil {
-		return err
-	}
-	// Get the
-	if !enoughSpace {
-		return errors.New("not enough free quota")
 	}
 	// Update PgNamespace
+	dbNamespaceUser := cr.Spec.User
+	dbNamespacePassword := cr.Spec.Password
+	query := fmt.Sprintf("ALTER ROLE '%s' WITH PASSWORD '%s';", dbNamespaceUser, dbNamespacePassword)
+	_, err2 := db.Exec(query)
+	if err2 != nil {
+		logrus.Errorf("Failed to execute query: %v", err2)
+		return err2
+	}
 	return nil
 }
 
@@ -46,44 +50,30 @@ func deletePgNamespace(cr *api.PgNamespace) (err error) {
 	return nil
 }
 
-// isEnoughQuota validates if PgCluster has enough quota to fulfill the
-// requested transition.
-func isEnoughQuota(cr *api.PgNamespace, current int32) (bool, error) {
-	// Get the free_reserved quota of the PgCluster
-	free, err := getFreePgClusterSpace(cr)
-	if err != nil {
-		logrus.Errorf("Failed to get PgCluster's free quota: %v", err)
-		return false, err
-	}
-	// Get the requested quota of the PgNamespace
-	requested, err := getPgNamespaceQuota(cr)
-	if err != nil {
-		logrus.Errorf("Failed to get PgNamespace's assigned quota: %v", err)
-		return false, err
-	}
-
-	if requested > current && requested-current > free {
-		return false, nil
-	}
-	return true, nil
-}
-
-// getFreePgClusterSpace gets the PgCuster available free quota.
-// It queries the PgCluster on the size of on the size of all database objects
-// and compares it with it's PVS limits, if they exist. It then calculates a
-// security margin and finally returns currently assignable quota.
-func getFreePgClusterSpace(cr *api.PgNamespace) (quota int32, err error) {
-	return 0, nil
-}
-
 // getPgNamespaceUsedQuota gets the PgNamespace's currently used quota.
 // It queries the PgCluster on the size of all database objects owned by the
 // PgNamespace and returns currently used quota.
-func getPgNamespaceUsedQuota(cr *api.PgNamespace) (quota int32, err error) {
-	return 0, nil
-}
-
-// getPgNamespaceUsedQuota gets the PgNamespace's quota.
-func getPgNamespaceQuota(cr *api.PgNamespace) (quota int32, err error) {
-	return 0, nil
+func getPgNamespaceUsedQuota(cr *api.PgNamespace) (quota *int64, err error) {
+	// Get Cluster Connection
+	db, err := getDbClusterConnection(&cr.Spec.PgCluster)
+	if err != nil {
+		logrus.Errorf("Failed to establish db connection: %v", err)
+		return nil, err
+	}
+	// Create PgNamespace
+	dbNamespaceUser := cr.Spec.User
+	query := fmt.Sprintf(`
+		SELECT SUM(pg_database_size(datname))::bigint ) AS usage
+		FROM pg_database
+		JOIN pg_authid
+		ON pg_database.datdba = pg_authid.oid
+		WHERE rolname = '%s'`, dbNamespaceUser)
+	row := db.QueryRow(query)
+	if err != nil {
+		logrus.Errorf("Failed to execute query: %v", err)
+		return nil, err
+	}
+	var usage int64
+	row.Scan(&usage)
+	return &usage, nil
 }

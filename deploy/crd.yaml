@@ -9,6 +9,8 @@ spec:
     listKind: OdooClusterList
     plural: odooclusters
     singular: odoocluster
+    categories:
+    - cluster
   scope: Namespaced
   version: v1alpha1
 ---
@@ -23,6 +25,8 @@ spec:
     listKind: OdooInstanceList
     plural: odooinstances
     singular: odooinstance
+    categories:
+    - instance
   scope: Namespaced
   version: v1alpha1
 ---
@@ -37,6 +41,8 @@ spec:
     listKind: ClusterMigrationList
     plural: clustermigrations
     singular: clustermigration
+    categories:
+    - cluster
   scope: Namespaced
   version: v1alpha1
 ---
@@ -51,6 +57,8 @@ spec:
     listKind: InstanceMigrationList
     plural: instancemigrations
     singular: instancemigration
+    categories:
+    - instance
   scope: Namespaced
   version: v1alpha1
 ---
@@ -65,6 +73,8 @@ spec:
     listKind: InstanceBackupList
     plural: instancebackups
     singular: instancebackup
+    categories:
+    - instance
   scope: Namespaced
   version: v1alpha1
 ---
@@ -79,5 +89,7 @@ spec:
     listKind: PgNamespaceList
     plural: pgnamespaces
     singular: pgnamespace
+    categories:
+    - cluster
   scope: Namespaced
   version: v1alpha1

@@ -531,6 +531,8 @@ func setDeploymentSpec(
 			},
 		},
 	}
+	// Set containers
+	out.Spec.Template.Spec.Containers = getContainerSpec(instance, track, tier)
 
 	// Set additional volumes dynamically
 	for _, s := range instance.Spec.Volumes {
@@ -549,9 +551,9 @@ func setDeploymentSpec(
 	}
 }
 
-func setContainerSpec(
-	containers []corev1.Container, instance *clusterv1beta1.OdooCluster,
-	track *clusterv1beta1.TrackSpec, tier *clusterv1beta1.TierSpec) {
+func getContainerSpec(instance *clusterv1beta1.OdooCluster, track *clusterv1beta1.TrackSpec, tier *clusterv1beta1.TierSpec) []corev1.Container {
+
+	containers := []corev1.Container{}
 
 	container := corev1.Container{
 		Name:  strings.ToLower(fmt.Sprintf("%s-%s-%s", instance.Name, track.Name, tier.Name)),
@@ -624,6 +626,7 @@ func setContainerSpec(
 		setCronTierContainerSpec(&container, tier)
 	}
 	containers = append(containers, container)
+	return containers
 
 }
 

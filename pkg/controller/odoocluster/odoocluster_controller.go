@@ -555,10 +555,10 @@ func setDeploymentSpec(
 	for _, s := range instance.Spec.Volumes {
 		vol := corev1.Volume{
 			// kubernetes.io/pvc-protection
-			Name: strings.ToLower(fmt.Sprintf("%s-%s", instance.Name, s.Name)),
+			Name: strings.ToLower(fmt.Sprintf("%s-%s-volume", instance.Name, s.Name)),
 			VolumeSource: corev1.VolumeSource{
 				PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-					ClaimName: strings.ToLower(fmt.Sprintf("%s-%s", instance.Name, s.Name)),
+					ClaimName: strings.ToLower(fmt.Sprintf("%s-%s-volume", instance.Name, s.Name)),
 					ReadOnly:  false,
 				},
 			},

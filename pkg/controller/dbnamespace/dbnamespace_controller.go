@@ -189,7 +189,7 @@ func createDBNamespace(spec *clusterv1beta1.DBNamespaceSpec) (err error) {
 		return err
 	}
 	// Create PgNamespace
-	query := fmt.Sprintf("CREATE ROLE '%s' WITH CREATEDB PASSWORD '%s';", spec.User, spec.Password)
+	query := fmt.Sprintf("CREATE ROLE \"%s\" WITH CREATEDB LOGIN PASSWORD '%s';", spec.User, spec.Password)
 	_, err = db.Exec(query)
 	if err != nil {
 		return err
@@ -204,7 +204,7 @@ func updateDBNamespace(spec *clusterv1beta1.DBNamespaceSpec) (err error) {
 		return err
 	}
 	// Update PgNamespace
-	query := fmt.Sprintf("ALTER ROLE '%s' WITH PASSWORD '%s';", spec.User, spec.Password)
+	query := fmt.Sprintf("ALTER ROLE \"%s\" WITH PASSWORD '%s';", spec.User, spec.Password)
 	_, err = db.Exec(query)
 	if err != nil {
 		return err

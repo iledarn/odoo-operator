@@ -1,0 +1,9 @@
+apiVersion: instance.odoo.io/v1beta1
+kind: InstanceMigration
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: instancemigration-sample
+spec:
+  # Add fields here
+  foo: bar

@@ -1,3 +1,0 @@
-apiVersion: odoo.k8s.io/v1alpha1
-kind: OdooCluster
-projectName: odoo-operator

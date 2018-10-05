@@ -1,0 +1,96 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: migrations.cluster.odoo.io
+spec:
+  group: cluster.odoo.io
+  names:
+    kind: Migration
+    plural: migrations
+  scope: Namespaced
+  validation:
+    openAPIV3Schema:
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          type: object
+        spec:
+          properties:
+            migratorImageSpec:
+              properties:
+                image:
+                  type: string
+                registry:
+                  type: string
+                secret:
+                  type: string
+                tag:
+                  type: string
+              required:
+              - registry
+              - image
+              - tag
+              type: object
+            newImageSpec:
+              properties:
+                image:
+                  type: string
+                registry:
+                  type: string
+                secret:
+                  type: string
+                tag:
+                  type: string
+              required:
+              - registry
+              - image
+              - tag
+              type: object
+            odooCluster:
+              type: string
+          required:
+          - odooCluster
+          - migratorImageSpec
+          - newImageSpec
+          type: object
+        status:
+          properties:
+            conditions:
+              items:
+                properties:
+                  lastTransitionTime:
+                    format: date-time
+                    type: string
+                  message:
+                    type: string
+                  reason:
+                    type: string
+                  status:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - type
+                - status
+                type: object
+              type: array
+            newInstances:
+              format: int32
+              type: integer
+            oldInstances:
+              format: int32
+              type: integer
+          type: object
+  version: v1beta1
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

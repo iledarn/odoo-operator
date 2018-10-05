@@ -1,0 +1,3 @@
+version: "1"
+domain: odoo.io
+repo: github.com/xoe-labs/odoo-operator

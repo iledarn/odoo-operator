@@ -431,6 +431,12 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 
 					return nil
 				})
+
+				if err != nil {
+					log.Printf("%s/%s Operation: %s. (Controller: OdooCluster) Error: %s\n", objService.Namespace, objService.Name, result, err)
+					return reconcile.Result{}, err
+				}
+				log.Printf("%s/%s reconciled. Operation: %s. (Controller: OdooCluster)\n", objService.Namespace, objService.Name, result)
 			case clusterv1beta1.LongpollingTier:
 				result, err = controllerutil.CreateOrUpdate(context.TODO(), r, objService, func(existing runtime.Object) error {
 					// mutate here the state of existing object to the desired state
@@ -455,13 +461,13 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 
 					return nil
 				})
-			}
 
-			if err != nil {
-				log.Printf("%s/%s Operation: %s. (Controller: OdooCluster) Error: %s\n", objService.Namespace, objService.Name, result, err)
-				return reconcile.Result{}, err
+				if err != nil {
+					log.Printf("%s/%s Operation: %s. (Controller: OdooCluster) Error: %s\n", objService.Namespace, objService.Name, result, err)
+					return reconcile.Result{}, err
+				}
+				log.Printf("%s/%s reconciled. Operation: %s. (Controller: OdooCluster)\n", objService.Namespace, objService.Name, result)
 			}
-			log.Printf("%s/%s reconciled. Operation: %s. (Controller: OdooCluster)\n", objService.Namespace, objService.Name, result)
 		}
 	}
 

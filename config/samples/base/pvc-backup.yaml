@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0002
+spec:
+  capacity:
+    storage: 4Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  hostPath:
+    path: /mnt/volumes/odoo-pv0002  # < ATTENTION: After *first* creation, ssh into the host and chmod 770 && chown root:2000; Note: 2000 is a magic group
+    type: DirectoryOrCreate

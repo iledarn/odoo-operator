@@ -1,0 +1,7 @@
+[
+  {"op": "replace", "path": "/spec/rules/0/host", "value": "foo.bar.io"},
+  {"op": "replace", "path": "/spec/rules/0/http/paths/0/backend/serviceName", "value": "odoocluster-sample-10-0-server"},
+  {"op": "replace", "path": "/spec/rules/0/http/paths/0/backend/serviceName", "value": "odoocluster-sample-10-0-longpolling"},
+  {"op": "replace", "path": "/spec/tls/0/hosts/0", "value": "foo.bar.io"},
+  {"op": "replace", "path": "/spec/tls/0/secretName", "value": "odoo-operator-ingress-cert"}
+]

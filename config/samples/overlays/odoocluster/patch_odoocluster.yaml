@@ -1,0 +1,29 @@
+apiVersion: cluster.odoo.io/v1beta1
+kind: OdooCluster
+metadata:
+  name: odoocluster-sample
+spec:
+  config: |  # < those will be mapped to the [options] section (cluster-scoped)
+    list_db = true
+    dbfilter = "^.*$"
+    log_handler = ":INFO"
+  dbNamespaceSpec:  # < TODO: Create DB Namespace (user:password) for this cluster
+    host: "postgres-host.com"
+    port: "5432"
+    user: "testing-user"
+    password: "testing-password"
+    # userQuota:  # < TODO: Add db quota reporting (disk usage)
+    dbAdmin:  # < We expect an externally deployed DB cluster, put root access in here for dynamic Namespace creation
+      user: "postgres"
+      password: "postgres"
+
+  adminPassword: "default-admin-password"  # < It is what it seems to be
+  tracks:
+    - name: "master"  # < eg. 10.0 | 11.0 | 12.0 or 11.0-1.4.3, if you manage sub version release cycles. You can manage several tracks in parallel, see Ingress Controller.
+      image:
+        # Create registry credentials
+        # See: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-secret-in-the-cluster-that-holds-your-authorization-token
+        secret: regcred  # < Configure, if this is a private image in a private registry
+        registry: "registry.gitlab.com"
+        image: "xoe/odoo/odoo-xoe"
+        tag: "master"

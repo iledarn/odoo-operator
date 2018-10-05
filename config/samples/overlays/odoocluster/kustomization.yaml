@@ -1,0 +1,38 @@
+# Adds namespace to all resources.
+namespace: odoo-operator-test
+
+# Value of this field is prepended to the
+# names of all resources, e.g. a deployment named
+# "wordpress" becomes "alices-wordpress".
+# Note that it should also match with the prefix (text before '-') of the namespace
+# field above.
+namePrefix: odoo-operator-
+
+# Labels to add to all resources and selectors.
+#commonLabels:
+#  someName: someValue
+
+
+# Each entry in this list must resolve to an existing
+# resource definition in YAML.  These are the resource
+# files that kustomize reads, modifies and emits as a
+# YAML string, with resources separated by document
+# markers ("---").
+resources:
+- namespace.yaml
+- ../../base/ingress.yaml
+- ../../base/pvc-data.yaml
+- ../../base/pvc-backup.yaml
+- ../../base/cluster_v1beta1_odoocluster.yaml
+
+patches:
+  - patch_odoocluster.yaml
+
+patchesJson6902:
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: ingress
+  path: patch_ingress.json
+

@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod  # < If using cert-manager (LetsEncrypt-SSL), an annotation indicating the issuer to use.
+  name: ingress
+spec:
+  rules:
+  - host: testcluster.example.com  # < domain based routing
+    http:
+      paths:
+      - path:
+        backend:
+          serviceName: odoocluster-sample-10-0-server  # < Constructed as: <CLUSTERNAME>-<TRACKNAME>-server; Note: "server" is the Tier
+          servicePort: 8069
+      - path: /longpolling
+        backend:
+          serviceName: odoocluster-sample-10-0-longpolling  # < Constructed as: <CLUSTERNAME>-<TRACKNAME>-longpolling; Note: "longpolling" is the Tier
+          servicePort: 8072
+  tls:  # < placing a host in the TLS config will indicate a cert should be created
+  - hosts:
+    - "*.example.com"  # < Hostnames for certs
+    secretName: ingress-cert  # < cert-manager will store the created certificate in this secret. Note: "odoo-ingress" Is the Ingress Resource name.

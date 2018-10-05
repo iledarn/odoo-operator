@@ -485,12 +485,23 @@ func setDeploymentSpec(
 		},
 		// Set Deployment Replicas
 		Replicas: &tier.Replicas,
+		Selector: &metav1.LabelSelector{
+			MatchLabels: map[string]string{
+				"cluster": strings.ToLower(instance.Name),
+				"tier":    strings.ToLower(fmt.Sprintf("%s", tier.Name)),
+				"track":   strings.ToLower(track.Name),
+			},
+		},
 	}
 
 	// Second, setup the Deployment Template
 
-	// Set Template ObjectMeta
-	out.Spec.Template.ObjectMeta = out.ObjectMeta
+	// Set Template Labels (to match deployment labels)
+	out.Spec.Template.Labels = map[string]string{
+		"cluster": strings.ToLower(instance.Name),
+		"tier":    strings.ToLower(fmt.Sprintf("%s", tier.Name)),
+		"track":   strings.ToLower(track.Name),
+	}
 
 	// Set Template Spec
 	out.Spec.Template.Spec = corev1.PodSpec{

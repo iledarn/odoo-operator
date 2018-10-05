@@ -87,7 +87,7 @@ const (
 	// DBMgtName ...
 	DBMgtName = "postgres"
 	// FinalizerKey ...
-	FinalizerKey = "dbnamespace.odoo.io"
+	FinalizerKey = "cleanup.dbnamespace.odoo.io"
 )
 
 // ReconcileDBNamespace reconciles a DBNamespace object
@@ -134,7 +134,12 @@ func (r *ReconcileDBNamespace) Reconcile(request reconcile.Request) (reconcile.R
 					return reconcile.Result{}, err
 				}
 			}
+			log.Printf("%s/%s removing finalizer: %s\n", instance.Namespace, instance.Name, FinalizerKey)
 			finalizers.RemoveFinalizers(instance, sets.NewString(FinalizerKey))
+			err = r.Update(context.TODO(), instance)
+			if err != nil {
+				return reconcile.Result{}, err
+			}
 		}
 		log.Printf("%s/%s reconciled. Operation: %s. (Controller: DBNameSpace)\n", instance.Namespace, instance.Name, operation)
 		return reconcile.Result{}, nil
@@ -144,6 +149,18 @@ func (r *ReconcileDBNamespace) Reconcile(request reconcile.Request) (reconcile.R
 		operation = "create"
 		// Create or update DBNamespace.
 		err := createDBNamespace(&instance.Spec)
+		if err != nil {
+			log.Printf("%s/%s Operation: %s. (Controller: DBNameSpace) Error: %s\n", instance.Namespace, instance.Name, operation, err)
+			return reconcile.Result{}, err
+		}
+
+		log.Printf("%s/%s setting finalizer: %s\n", instance.Namespace, instance.Name, FinalizerKey)
+		_, err = finalizers.AddFinalizers(instance, sets.NewString(FinalizerKey))
+		if err != nil {
+			log.Printf("%s/%s Operation: %s. (Controller: DBNameSpace) Error: %s\n", instance.Namespace, instance.Name, operation, err)
+			return reconcile.Result{}, err
+		}
+		err = r.Update(context.TODO(), instance)
 		if err != nil {
 			log.Printf("%s/%s Operation: %s. (Controller: DBNameSpace) Error: %s\n", instance.Namespace, instance.Name, operation, err)
 			return reconcile.Result{}, err
@@ -213,6 +230,46 @@ func updateDBNamespace(spec *clusterv1beta1.DBNamespaceSpec) (err error) {
 }
 
 func deleteDBNamespace(spec *clusterv1beta1.DBNamespaceSpec) (err error) {
+	// Get Cluster Connection
+	db, err := getDbClusterConnection(spec)
+	if err != nil {
+		return err
+	}
+
+	// Query all Databases owned by role
+	query := fmt.Sprintf(`
+		SELECT datname AS database
+		FROM pg_database
+		JOIN pg_authid
+		ON pg_database.datdba = pg_authid.oid
+		WHERE rolname = '%s'`, spec.User)
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	for rows.Next() {
+		var database string
+		err = rows.Scan(&database)
+		if err != nil {
+			return err
+		}
+
+		// Drop database
+		query := fmt.Sprintf("DROP DATABASE IF EXIXSTS '%s';", database)
+		_, err = db.Exec(query)
+		if err != nil {
+			return err
+		}
+
+	}
+
+	// Drop role itself
+	query = fmt.Sprintf("DROP ROLE \"%s\";", spec.User)
+	_, err = db.Exec(query)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

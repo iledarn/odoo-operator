@@ -259,10 +259,13 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 			// note that at this point _objPVC_ and _existing_ point to the same struct
 			out := existing.(*corev1.PersistentVolumeClaim)
 
-			out.Spec = volume.Spec // Desired state
+			// PVS spec is immutable after creation
+			if out.ObjectMeta.CreationTimestamp.IsZero() {
+				out.Spec = volume.Spec // Desired state
 
-			if err := controllerutil.SetControllerReference(instance, out, r.scheme); err != nil {
-				return err
+				if err := controllerutil.SetControllerReference(instance, out, r.scheme); err != nil {
+					return err
+				}
 			}
 
 			return nil

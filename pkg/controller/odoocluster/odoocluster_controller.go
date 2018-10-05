@@ -235,15 +235,17 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 		return nil
 	})
 	if err != nil {
+		log.Printf("%s/%s Operation: %s. (Controller: OdooCluster) Error: %s\n", objDBNamespace.Namespace, objDBNamespace.Name, result, err)
 		return reconcile.Result{}, err
 	}
-	log.Printf("%s/%s reconciled. Operation: %s\n", objDBNamespace.Namespace, objDBNamespace.Name, result)
+	log.Printf("%s/%s reconciled. Operation: %s. (Controller: OdooCluster)\n", objDBNamespace.Namespace, objDBNamespace.Name, result)
 
 	/* ----------------------------- */
 	/* --- Reconcile the Volumes --- */
 	/* ----------------------------- */
 
 	for _, volume := range instance.Spec.Volumes {
+
 		// Define the object name/namespace
 		objPVC := &corev1.PersistentVolumeClaim{
 			ObjectMeta: metav1.ObjectMeta{
@@ -266,9 +268,10 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 			return nil
 		})
 		if err != nil {
+			log.Printf("%s/%s Operation: %s. (Controller: OdooCluster) Error: %s\n", objPVC.Namespace, objPVC.Name, result, err)
 			return reconcile.Result{}, err
 		}
-		log.Printf("%s/%s reconciled. Operation: %s\n", objPVC.Namespace, objPVC.Name, result)
+		log.Printf("%s/%s reconciled. Operation: %s. (Controller: OdooCluster)\n", objPVC.Namespace, objPVC.Name, result)
 	}
 
 	/* -------------------------------- */
@@ -308,9 +311,10 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 			return nil
 		})
 		if err != nil {
+			log.Printf("%s/%s Operation: %s. (Controller: OdooCluster) Error: %s\n", objConfigMap.Namespace, objConfigMap.Name, result, err)
 			return reconcile.Result{}, err
 		}
-		log.Printf("%s/%s reconciled. Operation: %s\n", objConfigMap.Namespace, objConfigMap.Name, result)
+		log.Printf("%s/%s reconciled. Operation: %s. (Controller: OdooCluster)\n", objConfigMap.Namespace, objConfigMap.Name, result)
 	}
 
 	/* ---------------------------- */
@@ -345,9 +349,10 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 		return nil
 	})
 	if err != nil {
+		log.Printf("%s/%s Operation: %s. (Controller: OdooCluster) Error: %s\n", objSecret.Namespace, objSecret.Name, result, err)
 		return reconcile.Result{}, err
 	}
-	log.Printf("%s/%s reconciled. Operation: %s\n", objSecret.Namespace, objSecret.Name, result)
+	log.Printf("%s/%s reconciled. Operation: %s. (Controller: OdooCluster)\n", objSecret.Namespace, objSecret.Name, result)
 
 	/* --------------------------------- */
 	/* --- Reconcile the Deployments --- */
@@ -377,9 +382,10 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 				return nil
 			})
 			if err != nil {
+				log.Printf("%s/%s Operation: %s. (Controller: OdooCluster) Error: %s\n", objDeployment.Namespace, objDeployment.Name, result, err)
 				return reconcile.Result{}, err
 			}
-			log.Printf("%s/%s reconciled. Operation: %s\n", objDeployment.Namespace, objDeployment.Name, result)
+			log.Printf("%s/%s reconciled. Operation: %s. (Controller: OdooCluster)\n", objDeployment.Namespace, objDeployment.Name, result)
 		}
 	}
 
@@ -449,9 +455,10 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 			}
 
 			if err != nil {
+				log.Printf("%s/%s Operation: %s. (Controller: OdooCluster) Error: %s\n", objService.Namespace, objService.Name, result, err)
 				return reconcile.Result{}, err
 			}
-			log.Printf("%s/%s reconciled. Operation: %s\n", objService.Namespace, objService.Name, result)
+			log.Printf("%s/%s reconciled. Operation: %s. (Controller: OdooCluster)\n", objService.Namespace, objService.Name, result)
 		}
 	}
 

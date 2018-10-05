@@ -34,6 +34,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	// Load pg lib
 	_ "github.com/lib/pq"
 
@@ -100,6 +101,7 @@ type ReconcileDBNamespace struct {
 // Automatically generate RBAC rules to allow the Controller to read and write Deployments
 // +kubebuilder:rbac:groups=cluster.odoo.io,resources=dbnamespaces,verbs=get;list;watch;create;update;patch;delete
 func (r *ReconcileDBNamespace) Reconcile(request reconcile.Request) (reconcile.Result, error) {
+
 	// Fetch the DBNamespace instance
 	instance := &clusterv1beta1.DBNamespace{}
 	err := r.Get(context.TODO(), request.NamespacedName, instance)
@@ -120,34 +122,42 @@ func (r *ReconcileDBNamespace) Reconcile(request reconcile.Request) (reconcile.R
 	if err != nil {
 		return reconcile.Result{}, err
 	}
-
+	var operation string
 	// Marked for deletion: tear down!
 	if instance.GetDeletionTimestamp() != nil {
+		operation = "delete"
 		if hasFinalizer {
 			if exists {
 				err := deleteDBNamespace(&instance.Spec)
 				if err != nil {
+					log.Printf("%s/%s Operation: %s. (Controller: DBNameSpace) Error: %s\n", instance.Namespace, instance.Name, operation, err)
 					return reconcile.Result{}, err
 				}
 			}
 			finalizers.RemoveFinalizers(instance, sets.NewString(FinalizerKey))
 		}
+		log.Printf("%s/%s reconciled. Operation: %s. (Controller: DBNameSpace)\n", instance.Namespace, instance.Name, operation)
 		return reconcile.Result{}, nil
 	}
 
 	if !exists {
+		operation = "create"
 		// Create or update DBNamespace.
 		err := createDBNamespace(&instance.Spec)
 		if err != nil {
+			log.Printf("%s/%s Operation: %s. (Controller: DBNameSpace) Error: %s\n", instance.Namespace, instance.Name, operation, err)
 			return reconcile.Result{}, err
 		}
 	} else {
+		operation = "update"
 		err := updateDBNamespace(&instance.Spec)
 		if err != nil {
+			log.Printf("%s/%s Operation: %s. (Controller: DBNameSpace) Error: %s\n", instance.Namespace, instance.Name, operation, err)
 			return reconcile.Result{}, err
 		}
 	}
 
+	log.Printf("%s/%s reconciled. Operation: %s. (Controller: DBNameSpace)\n", instance.Namespace, instance.Name, operation)
 	return reconcile.Result{}, nil
 }
 

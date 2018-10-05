@@ -249,7 +249,7 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 		// Define the object name/namespace
 		objPVC := &corev1.PersistentVolumeClaim{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      fmt.Sprintf("%s-%s-volume", instance.Name, volume.Name),
+				Name:      strings.ToLower(fmt.Sprintf("%s-%s-volume", instance.Name, volume.Name)),
 				Namespace: instance.Namespace,
 			},
 		}
@@ -282,7 +282,7 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 		// Define the object name/namespace
 		objConfigMap := &corev1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      fmt.Sprintf("%s-%s-config", instance.Name, track.Name),
+				Name:      strings.ToLower(fmt.Sprintf("%s-%s-config", instance.Name, track.Name)),
 				Namespace: instance.Namespace,
 			},
 		}
@@ -324,7 +324,7 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 	// Define the object name/namespace
 	objSecret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      instance.Name + "-secret",
+			Name:      strings.ToLower(fmt.Sprintf("%s-secret", instance.Name)),
 			Namespace: instance.Namespace,
 		},
 	}
@@ -363,7 +363,7 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 			// Define the object name/namespace
 			objDeployment := &appsv1.Deployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      fmt.Sprintf("%s-%s-%s-deployment", instance.Name, track.Name, tier.Name),
+					Name:      strings.ToLower(fmt.Sprintf("%s-%s-%s-deployment", instance.Name, track.Name, tier.Name)),
 					Namespace: instance.Namespace,
 				},
 			}
@@ -398,7 +398,7 @@ func (r *ReconcileOdooCluster) Reconcile(request reconcile.Request) (reconcile.R
 			// Define the object name/namespace
 			objService := &corev1.Service{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      fmt.Sprintf("%s-%s-%s-service", instance.Name, track.Name, tier.Name),
+					Name:      strings.ToLower(fmt.Sprintf("%s-%s-%s-service", instance.Name, track.Name, tier.Name)),
 					Namespace: instance.Namespace,
 				},
 			}
@@ -494,21 +494,21 @@ func setDeploymentSpec(
 		// Set Template Volumes
 		Volumes: []corev1.Volume{
 			{
-				Name: instance.Name + "-config",
+				Name: strings.ToLower(fmt.Sprintf("%s-config", instance.Name)),
 				VolumeSource: corev1.VolumeSource{
 					ConfigMap: &corev1.ConfigMapVolumeSource{
 						LocalObjectReference: corev1.LocalObjectReference{
-							Name: fmt.Sprintf("%s-%s-config", instance.Name, track.Name),
+							Name: strings.ToLower(fmt.Sprintf("%s-%s-config", instance.Name, track.Name)),
 						},
 						DefaultMode: func(a int32) *int32 { return &a }(272), // octal 0420
 					},
 				},
 			},
 			{
-				Name: instance.Name + "-secret",
+				Name: strings.ToLower(fmt.Sprintf("%s-secret", instance.Name)),
 				VolumeSource: corev1.VolumeSource{
 					Secret: &corev1.SecretVolumeSource{
-						SecretName:  instance.Name + "-secret",
+						SecretName:  strings.ToLower(fmt.Sprintf("%s-secret", instance.Name)),
 						DefaultMode: func(a int32) *int32 { return &a }(256), // octal 0400
 					},
 				},
@@ -533,10 +533,10 @@ func setDeploymentSpec(
 	for _, s := range instance.Spec.Volumes {
 		vol := corev1.Volume{
 			// kubernetes.io/pvc-protection
-			Name: instance.Name + strings.ToLower(fmt.Sprintf("%s", s.Name)),
+			Name: strings.ToLower(fmt.Sprintf("%s-%s", instance.Name, s.Name)),
 			VolumeSource: corev1.VolumeSource{
 				PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-					ClaimName: instance.Name + strings.ToLower(fmt.Sprintf("%s", s.Name)),
+					ClaimName: strings.ToLower(fmt.Sprintf("%s-%s", instance.Name, s.Name)),
 					ReadOnly:  false,
 				},
 			},
@@ -551,8 +551,8 @@ func setContainerSpec(
 	track *clusterv1beta1.TrackSpec, tier *clusterv1beta1.TierSpec) {
 
 	container := corev1.Container{
-		Name:  fmt.Sprintf("%s-%s-%s", instance.Name, track.Name, tier.Name),
-		Image: fmt.Sprintf("%s/%s:%s", track.Image.Registry, track.Image.Image, track.Image.Tag),
+		Name:  strings.ToLower(fmt.Sprintf("%s-%s-%s", instance.Name, track.Name, tier.Name)),
+		Image: strings.ToLower(fmt.Sprintf("%s/%s:%s", track.Image.Registry, track.Image.Image, track.Image.Tag)),
 		Lifecycle: &corev1.Lifecycle{
 			PostStart: &corev1.Handler{
 				Exec: &corev1.ExecAction{
@@ -608,8 +608,8 @@ func setContainerSpec(
 	volumes := []corev1.VolumeMount{}
 	for _, s := range instance.Spec.Volumes {
 		volumes = append(volumes, corev1.VolumeMount{
-			Name:      instance.Name + strings.ToLower(fmt.Sprintf("%s", s.Name)),
-			MountPath: appMountPath + strings.ToLower(fmt.Sprintf("%s", s.Name)) + "/",
+			Name:      strings.ToLower(fmt.Sprintf("%s-%s", instance.Name, s.Name)),
+			MountPath: strings.ToLower(fmt.Sprintf("%s%s", appMountPath, s.Name)) + "/",
 		})
 	}
 	switch tier.Name {
@@ -783,8 +783,8 @@ func newOptionsConfig(clusterOverrides *string, trackOverrides *string) string {
 	}
 
 	section := fmt.Sprintf(odooOptionsSection,
-		appMountPath+strings.ToLower(fmt.Sprintf("%s", clusterv1beta1.PVCNameData))+"/",
-		appMountPath+strings.ToLower(fmt.Sprintf("%s", clusterv1beta1.PVCNameBackup))+"/",
+		strings.ToLower(fmt.Sprintf("%s%s", appMountPath, clusterv1beta1.PVCNameData))+"/",
+		strings.ToLower(fmt.Sprintf("%s%s", appMountPath, clusterv1beta1.PVCNameBackup))+"/",
 		cO, tO)
 	buf.WriteString(section)
 	return buf.String()
